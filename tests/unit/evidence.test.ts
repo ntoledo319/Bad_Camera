@@ -126,7 +126,7 @@ describe('A19 evidence package verification', () => {
   it('rejects zip bombs by decompressed size limit', () => {
     const big = new Uint8Array(5_000_000);
     const z = zipSync({ 'a.bin': big }, { level: 9 });
-    expect(() => readZipSafely(z, { maxArchiveBytes: 1e8, maxTotalUncompressed: 1_000_000, maxEntryUncompressed: 1_000_000, maxEntries: 10 })).toThrow(UnsafeArchiveError);
+    expect(() => readZipSafely(z, { maxArchiveBytes: 1e8, maxTotalUncompressed: 1_000_000, maxFileBytes: 1_000_000, maxEntries: 10 })).toThrow(UnsafeArchiveError);
   });
   it('rejects unknown schema versions', () => {
     const files = Object.fromEntries(readZipSafely(ev.zip));
