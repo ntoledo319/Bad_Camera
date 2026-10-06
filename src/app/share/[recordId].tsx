@@ -14,6 +14,7 @@ import { loadBundle, projectionFor, reviewedAttachments, derivativeFor, evidence
 import { DEFAULT_DISCLOSURE, captions, type DisclosureChoices, type DateGranularity } from '../../domain/projection';
 import { renderCard, PRESETS, type CardPreset } from '../../domain/card';
 import { schematicFor } from '../../domain/schematics';
+import { CATALOG_BY_ID } from '../../../content/catalog/catalog';
 import { CardPreview } from '../../features/share/CardPreview';
 import { rasterize } from '../../platform/raster';
 import { shareBytes, saveBytes, copyText, type ShareOutcome } from '../../platform/files';
@@ -83,7 +84,7 @@ export default function ShareStudio() {
       preset: fmt as CardPreset,
       photoDataUri: usePhoto ? photoUri.uri : null,
       photoAspect: usePhoto ? photoUri.aspect : undefined,
-      schematicSvg: schematicFor(b?.observation.selectedFamilyId),
+      schematicSvg: schematicFor(b?.observation.selectedFamilyId ? CATALOG_BY_ID[b.observation.selectedFamilyId]?.schematic : null),
     });
   }, [projection, fmt, ch.includePhoto, photoUri, isCard, b]);
 
