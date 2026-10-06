@@ -66,7 +66,8 @@
     "content:check": "tsx tools/content-check/check.ts",
     "export:web": "expo export -p web",
     "prebuild": "expo prebuild --clean --no-install",
-    "postinstall": "node tools/web/copy-maplibre-worker.mjs"
+    "postinstall": "node tools/web/copy-maplibre-worker.mjs",
+    "check": "tsc --noEmit && eslint src content tools tests && vitest run && tsx tools/content-check/check.ts"
   },
   "private": true
 }

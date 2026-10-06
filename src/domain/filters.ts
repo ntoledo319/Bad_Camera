@@ -25,10 +25,13 @@ export function applyFilters(items: CameraInstallation[], f: FilterState, now = 
     if (!f.includeRemoved && isRemoved(i)) return false;
     if (f.categories.length && !f.categories.includes(i.category)) return false;
     if (f.manufacturers.length && !(i.manufacturerId && f.manufacturers.includes(i.manufacturerId))) return false;
+    // Vehicle-mounted records are dated sightings, not fixed infrastructure: hidden unless asked for (A09).
+    const mobile = i.deploymentMode === 'vehicle_mounted';
+    if (mobile && !f.deployment.includes('historical_mobile')) return false;
     if (f.deployment.length) {
-      const d = i.deploymentMode === 'fixed' ? 'fixed' : i.deploymentMode === 'unknown' ? null : 'relocatable';
-      const hist = isRemoved(i) && i.deploymentMode !== 'fixed' ? 'historical_mobile' : null;
-      if (!f.deployment.some((x) => x === d || x === hist)) return false;
+      const d = i.deploymentMode === 'fixed' ? 'fixed' : i.deploymentMode === 'relocatable' || i.deploymentMode === 'trailer' ? 'relocatable' : mobile ? 'historical_mobile' : null;
+      // Unknown deployment is not treated as "not fixed": it stays visible under any deployment filter.
+      if (d && !f.deployment.includes(d)) return false;
     }
     if (f.sourceStatus.length && !f.sourceStatus.includes(sourceStatusOf(i, claims))) return false;
     if (f.maxObservationAgeDays != null) {
