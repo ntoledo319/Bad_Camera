@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "format": "sightline-evidence",
+  "exportId": "demo-export-0001",
+  "recordId": "demo-observation-1",
+  "recordRevision": 2,
+  "exportCreatedAt": "2026-09-15T09:10:00.000Z",
+  "selectedDisclosureProfile": "public-default",
+  "exportedClaims": [
+    {
+      "fieldPath": "category",
+      "value": "alpr",
+      "basis": "sourceReported",
+      "status": "unreviewed",
+      "sourceId": "demo-src-community"
+    },
+    {
+      "fieldPath": "hardware.manufacturer",
+      "value": "Flock Safety",
+      "basis": "sourceReported",
+      "status": "unreviewed",
+      "sourceId": "demo-src-community"
+    },
+    {
+      "fieldPath": "observation.checkDate",
+      "value": "2026-08-21",
+      "basis": "sourceReported",
+      "status": "unreviewed",
+      "sourceId": "demo-src-community"
+    },
+    {
+      "fieldPath": "hardware.mount",
+      "value": "pole",
+      "basis": "directlyObserved",
+      "status": "unreviewed",
+      "sourceId": "demo-src-photo"
+    }
+  ],
+  "sourceRefs": [
+    {
+      "id": "demo-src-community",
+      "title": "Demonstration community map record (fictional)",
+      "url": "https://www.openstreetmap.org/copyright",
+      "accessedAt": "2026-09-14T00:00:00.000Z",
+      "licenseId": "ODbL-1.0"
+    }
+  ],
+  "limitations": [
+    "Mapping/source claims can be wrong or stale.",
+    "Phone time, GPS and imported metadata are not independently attested.",
+    "A checksum detects a change relative to a known digest; it does not prove the scene, time, location or claim is true.",
+    "These materials do not establish that a camera recorded any person or vehicle.",
+    "Legal admissibility depends on context; the app does not certify it."
+  ],
+  "files": [
+    {
+      "relativePath": "LICENSES.txt",
+      "mime": "text/plain",
+      "bytes": 467,
+      "sha256": "53765642fa9f450426ff09666378a6a4c23972a19ca3df434e6a92c12239c7b3"
+    },
+    {
+      "relativePath": "README.txt",
+      "mime": "text/plain",
+      "bytes": 1417,
+      "sha256": "9eae8dda9edb1493bfd5752ce3260f74bdd4c53d9389f5a85bc623e044b6c9fa"
+    },
+    {
+      "relativePath": "media/approved-derivative-01.jpg",
+      "mime": "image/jpeg",
+      "bytes": 84942,
+      "sha256": "f3aca3867e828009bb20ba25912c66229a8683b72afe4d878f2b19cc5ef59ff5"
+    },
+    {
+      "relativePath": "records/observation.json",
+      "mime": "application/json",
+      "bytes": 1796,
+      "sha256": "f4101a9670f59af5498dc22de82f98001071ad4dbe379045a68ecff50892cea4"
+    },
+    {
+      "relativePath": "records/revisions.json",
+      "mime": "application/json",
+      "bytes": 694,
+      "sha256": "0992a6056e77bf23091ec7a5e02d8f07a5c530d494c3fce7993cc45b5a91645f"
+    },
+    {
+      "relativePath": "report.html",
+      "mime": "text/html",
+      "bytes": 5388,
+      "sha256": "41d03251b3e4aba12bdd0b67aee20790b2bfc03e35d8064a20acac5838df6539"
+    },
+    {
+      "relativePath": "report.pdf",
+      "mime": "application/pdf",
+      "bytes": 96039,
+      "sha256": "ebbd28aaee4511e071ddeb5364e8d43692d980978d71bd2c4196a842b51c1579"
+    },
+    {
+      "relativePath": "sources/sources.json",
+      "mime": "application/json",
+      "bytes": 428,
+      "sha256": "2042f6065ae94a44ea70f17fcffce948b0400aa9228bb54fd4711029c052e64a"
+    }
+  ],
+  "attribution": [
+    "© OpenStreetMap contributors, ODbL 1.0 — openstreetmap.org/copyright"
+  ],
+  "derivedFromRecordDigest": "c15ab1b1cd3fa427fddc6af16eefa3ab6c4592cb5aaf0eaf5122270fb811e898",
+  "demonstration": true
+}

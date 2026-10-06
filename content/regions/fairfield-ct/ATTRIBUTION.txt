@@ -1,0 +1,5 @@
+© OpenStreetMap contributors (ODbL 1.0)
+Data © OpenStreetMap contributors, available under the Open Database License (ODbL) 1.0.
+https://www.openstreetmap.org/copyright
+This region file is a Derivative Database of OpenStreetMap and is offered under ODbL 1.0.
+Public reports are incomplete: absence of a pin does not mean absence of equipment.

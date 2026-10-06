@@ -1,0 +1,8 @@
+NEUTRAL
+[DEMONSTRATION — NOT A REAL SIGHTING] This location near Example Avenue & Demo Street is listed as a plate reader in Sightline demo data (Demonstration community map record (fictional)). The record was retrieved September 14, 2026; its last in-person observation is August 21, 2026. This does not establish whether the device is operating or recorded anyone. Source: https://www.openstreetmap.org/copyright
+
+QUESTION
+[DEMONSTRATION — NOT A REAL SIGHTING] What is the policy for this camera's retention and data sharing? Here is the documented location and source. https://www.openstreetmap.org/copyright
+
+ALT TEXT
+DEMONSTRATION — NOT A REAL SIGHTING. Sightline card. A documented plate reader near Example Avenue & Demo Street. Type: Plate reader (ALPR). Source status: Community-mapped. Observed September 2026. A location report is not proof of recording.

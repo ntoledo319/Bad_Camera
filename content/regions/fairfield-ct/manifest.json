@@ -1,0 +1,24 @@
+{
+  "id": "fairfield-ct",
+  "name": "Fairfield, CT",
+  "bbox": [
+    -73.33,
+    41.115,
+    -73.195,
+    41.225
+  ],
+  "provider": "OpenStreetMap via Overpass API",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "query": "[out:json][timeout:25][maxsize:16777216];(nwr[\"man_made\"=\"surveillance\"](41.115,-73.33,41.225,-73.195);nwr[\"highway\"=\"speed_camera\"](41.115,-73.33,41.225,-73.195););out meta center;",
+  "fetchedAt": "2026-10-06T11:14:50.553Z",
+  "upstreamTimestamp": "2026-10-06T11:12:42Z",
+  "recordCount": 76,
+  "bytes": 296875,
+  "sha256": "fc694f1a3916612a0ec1a513e810583326c9083c34d9b10c631884deb324f824",
+  "attribution": "© OpenStreetMap contributors (ODbL 1.0)",
+  "licenseId": "ODbL-1.0",
+  "normalizationVersion": "osm-norm-1",
+  "status": "current",
+  "lastError": null,
+  "isDemo": false
+}

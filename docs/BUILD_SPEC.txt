@@ -1,0 +1,752 @@
+SIGHTLINE — COMPLETE SUPERNINJA BUILD HANDOFF
+Native iPhone + Android camera transparency and evidence app
+Prepared: October 6, 2026 | Research jurisdiction: United States, with Connecticut context
+Working name only: Sightline. Name availability and trademark clearance have not been established.
+
+HOW TO USE THIS FILE
+
+Upload this entire file to a new SuperNinja autonomous Task, not an ordinary Chat. Paste the launch instruction below. If attachments are unavailable, paste Prompt A in full, including its source register. Prompt A runs the complete implementation; Prompts B and C are recovery and independent review prompts, not mandatory steps that interrupt the overnight run.
+
+LAUNCH INSTRUCTION
+
+Read the attached SuperNinja_Camera_Transparency_Build_Prompt.txt completely. Execute Prompt A and its embedded specification end to end in your autonomous computer environment. This is a build assignment, not a request for a proposal. Make the routine decisions already authorized in the specification, keep a durable checklist, implement and test the native iOS and Android project, and deliver the source and actual runnable artifacts your environment supports. Do not stop after planning or substitute a website for the mobile apps. Use the source register for narrow verification, not an open-ended research detour. Continue around missing credentials using the specified fallbacks. Finish with honest build/test status and exact remaining external requirements.
+
+OPERATOR NOTES — READ BEFORE STARTING
+
+SuperNinja's official materials describe Tasks as its autonomous computer workflow and Chat as its conversational workflow. They describe a dedicated VM, filesystem/shell access, an editor, multi-file coding, and GitHub integration. This handoff uses file checkpoints, a single coordinated task, concrete implementation contracts, and executable acceptance criteria to fit those capabilities. [N1–N3]
+
+Choose the strongest coding/complex-task mode actually offered in your account, if there is a choice. This is an engineering recommendation, not a verified comparison of its models. Public Ninja pages disagree about some models, plans, and quotas, and its January guide is older than its current product pages. Do not buy a plan or rely on a specific model name, unlimited runtime, or a quoted credit allowance from this document. Confirm the current task budget in the service UI. [N1–N3]
+
+The research did not establish that every SuperNinja task includes macOS, Xcode, an Android emulator, an iOS simulator, or store-signing credentials. Native source can be produced without those; a tested native binary cannot be honestly claimed without the corresponding toolchain and execution. An iPhone installation/distribution workflow still needs appropriate Apple tooling and signing; EAS is an optional separate build service, not a capability automatically included with Ninja. [T1]
+
+Product interpretation: this app finds publicly mapped infrastructure and helps people document visible equipment. It is not a universal electronic camera detector, does not access police systems, and cannot prove that a mapped camera recorded a particular person. Its differentiator is a useful, beautiful, source-backed record and sharing workflow, rather than another map with dramatic pins.
+
+======================================================================
+PROMPT A — AUTONOMOUS IMPLEMENTATION MASTER PROMPT
+======================================================================
+
+You are the lead mobile engineer, product designer, and QA owner for Sightline. Build the complete application specified below. I will be away while you work. Resolve ordinary implementation choices yourself. Do not turn settled product decisions into questions. Build the thing, keep the receipts, and tell me precisely what works.
+
+1. DELIVERABLE AND DEFINITION OF SUCCESS
+
+Deliver one maintainable cross-platform native mobile codebase for iPhone and Android, with platform-appropriate behavior and a browser preview for convenient design review. The browser preview is a companion, not the deliverable in place of native applications.
+
+The app must let someone:
+1) Open a map or accessible list without an account.
+2) Locate publicly documented camera/sensor infrastructure near a chosen place.
+3) See approximate straight-line distance from their current or manually selected reference point, with meaningful accuracy and freshness information.
+4) Understand what the hardware is, what the source actually establishes, and what remains unknown.
+5) Photograph or import a photo, place the equipment on the map, identify it using a guided field guide, attach sources, and save a private observation.
+6) Preserve the original evidence and an inspectable history while making privacy-redacted derivatives for sharing.
+7) Export beautiful social cards, a readable evidence PDF, and a machine-readable evidence package.
+8) Understand the legal basis and limits of lawful public observation, mapping, and publication through a substantive cited rights page.
+9) Back up and restore their notebook without creating an account.
+
+No login, guest-login screen, anonymous Firebase account, mandatory phone number, email collection, subscription gate, advertising ID, social OAuth, or required cloud account for app users. Developer signing/provider accounts are separate deployment concerns and must never become end-user login requirements.
+
+The core map, field guide, records, redaction, exports, rights content, and backup must genuinely function. No fake scan animation, random confidence score, hard-coded "live" count, dummy save, fake share-success toast, or buttons leading to unfinished dead ends. An explicitly labeled demo dataset is permitted only in a separate demo mode.
+
+Do not purchase services, create paid commitments, submit to app stores, contact third parties, post social content, or publicly upload private evidence during this build. Use an existing user-authorized repo only if one is provided; otherwise create a local Git repo and downloadable source archive. Use task previews restricted to the available review environment; do not assume a generated URL is private.
+
+2. PRODUCT IDENTITY AND AUDIENCE
+
+Working name: Sightline.
+Tagline: Know what is watching. Keep the evidence.
+App description: A private field notebook and public-information map for understanding surveillance infrastructure.
+Audience: residents, journalists, researchers, community groups, and people who want understandable information about cameras around them.
+Launch geography: U.S. general coverage, with a useful initial regional-data workflow for coastal Connecticut. The app must not pretend the Connecticut dataset is complete or that empty regions contain no cameras.
+
+Tone: calm, precise, approachable. Make the product feel like a thoughtfully designed atlas crossed with an excellent field notebook. Avoid militaristic radar screens, hacker-green theatrics, angry slogans, scary alerts, generic AI purple gradients, and walls of administrative controls. Facts do the work.
+
+Core product boundary: document infrastructure, not people. Fixed public-facing equipment belongs on the map. Mobile cameras are cataloged as a category; historical mobile sightings remain dated observations, not a real-time police/vehicle/person tracking layer. Do not build plate lookup, facial recognition, a map of private individuals, stream access, network scanning, interference, or claimed surveillance-free routing.
+
+3. RESEARCH THAT MUST SHAPE THE APP
+
+Use the following researched distinctions as the initial catalog. Product capabilities below are manufacturer descriptions, not independent validation or proof of any installed device's configuration. Preserve aliases because public datasets and older contracts use older names. Never interpret a vendor's general capabilities as established facts about every pin.
+
+Family | Include in catalog | Classification and important distinction
+Flock Safety | Current LPR families plus legacy Falcon, Falcon LR/SR, Falcon Flex and Sparrow aliases | Fixed or relocatable automated plate/vehicle recognition. Current site uses labels including Standard, Wide-Range, Long-Range and Flex LPR; do not invent one-to-one alias equivalences without documentation. [C1,C2,C3]
+Flock Safety | Video Cameras / legacy Condor | Video surveillance; keep separate from dedicated plate-reader classification unless a deployment source establishes ALPR too. [C4]
+Flock Safety | Gunshot Detection / legacy Raven | Acoustic sensor, not a camera. Catalog it, but make the icon and language different. Avoid carrying forward old audio-capability claims as current facts. [C5]
+Flock Safety | Trailers and drone programs | Trailer is a mounting/deployment form, not a new sensing capability. Drone adoption belongs in agency context; no live aircraft map. [C1]
+Axon | Outpost | Infrastructure camera combining ALPR, video, and vehicle attributes according to Axon. [C6]
+Axon | Lightpost | Streetlight-integrated camera with ALPR/video/vehicle attributes, according to Axon. [C7]
+Axon | Fleet 3 | Vehicle-mounted video and mobile ALPR. A dated sighting is not a fixed camera installation. [C8]
+Axon | Fusus | Integration platform, not a distinctive camera housing. Other manufacturers' cameras can be connected. Visual appearance alone cannot establish a Fusus connection. [C9]
+Motorola Solutions / Vigilant | L5F, L6Q | Fixed and quick-deploy ALPR families. VehicleManager and other software brands are not physical camera shapes. [C10,C11]
+Genetec | AutoVu SharpV, SharpZ3, Cloudrunner | Fixed, mobile, and deployment options within the ALPR ecosystem. Keep model, software, and mounting fields separate. [C12]
+Leonardo / ELSAG | Fixed Plate Hunter, Street Sentry, Mobile Plate Hunter, VPH900 | Fixed, solar, mobile, and video-based plate recognition families. [C13,C14]
+Rekor | Edge Pro, Edge Max, Scout | Hardware plus software-based recognition, which may be applied to existing IP cameras. Appearance is not a reliable software identifier. [C15,C16,C17]
+Neology | neoForce, P497, P720 | Fixed and mobile ANPR families. [C18,C19,C20]
+Jenoptik | VECTOR2 / VECTOR², VECTOR3 / VECTOR³ | ANPR family; retain model aliases and documented geographic applicability. [C21]
+Axis | Q1800-LE, Q1800-LE-3, License Plate Verifier | Distinguish camera hardware and installed recognition application; an Axis logo alone does not establish ALPR. [C22]
+Hanwha Vision / Wisenet | Road AI and compatible cameras | Video/vehicle-recognition ecosystem; do not label every Hanwha camera as a plate reader. [C23]
+Verra Mobility; Sensys Gatso | Red-light, speed, school-zone and other documented enforcement camera categories | Enforcement is a separate purpose from general ALPR investigation, although capabilities can overlap. [C24,C25]
+SoundThinking | ShotSpotter | Acoustic detection category; not a camera. [C26]
+Unknown / other | Public-facing fixed CCTV, PTZ, multi-sensor, traffic monitoring, parking/access-control cameras, unknown sensors | Generic classification with unknown vendor is a first-class valid result. Do not force a brand guess.
+
+This is broad category coverage, not a claim to catalog every model worldwide. Build a data-driven catalog that can add families without redesigning screens. Include these initial families and at least one informative detail card per row, with source links. Do not silently reduce scope to Flock and Axon.
+
+Never infer from a photograph alone: who operates the camera; who can search it; retention duration; whether it is connected to Fusus/FlockOS; whether facial recognition is enabled; whether it is recording now; whether it read a particular plate; or whether its placement/use is lawful.
+
+4. INFORMATION ARCHITECTURE
+
+Four bottom tabs on phone:
+- Explore: map, accessible list, filters, place search, detail sheets.
+- Identify: capture/import, guided classification, catalog, comparison.
+- Notebook: saved observations, bookmarks, collections, evidence exports, backup.
+- Learn: field guide, how the app works, legal rights, public-records request builder, source methodology.
+
+Settings is a clearly labeled gear button in top-level headers. Global secondary screens: source detail, photo viewer/redactor, share studio, backup/restore, offline regions, privacy, licenses, app diagnostics. Present meaningful page titles and back navigation. Preserve each tab's scroll, map viewport, and unfinished draft.
+
+Primary routes:
+/welcome
+/(tabs)/explore
+/(tabs)/identify
+/(tabs)/notebook
+/(tabs)/learn
+/camera/[id]
+/observation/new and /observation/[id]
+/catalog/[id]
+/compare
+/share/[recordId]
+/sources/[id]
+/collections/[id]
+/learn/rights
+/learn/methodology
+/learn/records-request
+/settings, /settings/privacy, /settings/data, /settings/backup
+
+On tablets/wide windows: map/list and selected detail can share a two-pane layout. Do not stretch narrow phone cards across the full width. The phone experience remains primary.
+
+5. VISUAL DESIGN SYSTEM — IMPLEMENT THESE DECISIONS
+
+Light theme:
+- Canvas #F6F4EE, surface #FFFFFF, raised surface #FFFEFA.
+- Main text #172624, secondary text #536560, subtle borders #DCE3DC.
+- Primary teal #14675F; white text on primary actions.
+- Warm ochre #8C5A12 for caution text, pale ochre #FFF1D3 for its surface.
+- Error #B33636, pale error #FCECEC. Red signifies a problem, not ordinary cameras.
+
+Dark theme:
+- Canvas #101A18, surface #192623, raised surface #22332E.
+- Main text #EEF4EF, secondary #B3C2B9, border #35483F.
+- Primary mint #8FD8C1 with dark text #10231C.
+- Caution #E4BD73; error #FFA5A0.
+
+Verify actual contrast for every pairing. Color tokens are proposed design values, not permission to ship failing contrast. Normal text 4.5:1 minimum; large text/UI boundaries 3:1 where applicable. Encode statuses using words, icons and shape, never color alone.
+
+Typography: native system UI fonts for dependable platform rendering. Use 32/38 semibold page titles; 24/30 semibold section titles; 18/24 semibold card titles; 16/24 body; 14/20 supporting text; 12/16 minimum metadata. Use tabular numerals for distance and timestamps. No all-caps paragraphs. All text supports platform scaling; the layout expands rather than clipping at 200%.
+
+Spacing scale: 4, 8, 12, 16, 24, 32, 48. Page gutter 20 on regular phones, 16 on narrow phones. Cards radius 20, controls 12, chips fully rounded. Buttons 52 high, controls at least 44pt iOS / 48dp Android. One strong primary action per screen. Hairline dividers and restrained shadows; no needless nested cards.
+
+Icons: one coherent permissively licensed line-icon family, consistent stroke. Original SVG app mark: a simple viewpoint/lens with an open notch, no vendor marks. App icon must read at small size. Supply adaptive Android foreground/background and iOS icon assets.
+
+Motion: 160–220ms fades and sheet transitions; spring only for direct sheet interaction. Honor Reduce Motion. No continuously pulsing pins, auto-scrolling carousels, celebratory confetti, or attention traps. Haptics are subtle and optional.
+
+Map: muted roads, quiet parks/water, clear text, strong selected marker. Markers distinguish ALPR, video, enforcement, acoustic, unknown. Deployment mode is a separate icon/badge. A small direction tick appears only when orientation is sourced. Clusters show mapped-record count, not inferred camera lenses. Selected pin has a visible outline. Hide irrelevant basemap POIs where the chosen lawful style allows it.
+
+6. SCREEN-BY-SCREEN UX CONTRACT
+
+S01 Welcome
+One short welcome page with a refined original line illustration and the tagline. Explain: "Explore public records. Save your observations privately. Share only what you choose." Buttons: Explore a place; Use my location. Quiet link: Try a clearly labeled demo. No permission prompt on launch before either action. No account path. Explain that online map/data providers can receive network requests; do not promise total anonymity.
+
+S02 Explore map
+Top: place/search pill, Settings. Below: chips All cameras / Plate readers / Video / Enforcement / Sensors, with an overflow Filters sheet. Map fills the background. Right-side recenter and compass controls are reachable and labeled. Bottom floating summary: "Mapped in this area" plus a count, freshness and List toggle. A persistent small coverage note is accessible from the count: "Public reports are incomplete." Show map attribution above sheets, never behind the tab bar.
+Panning does not immediately hammer a data API. Offer Search this area and debounce deliberate refresh. Permission denial leaves place search, coordinate input and browsing fully usable. Distances then refer to a user-selected reference point or are absent.
+
+S03 Explore list
+Same filters as map. Rows: type glyph, category/vendor when supported, concise place label, distance, source status, last observation date or "Observation date unknown." Sort by distance only with a valid reference. Alternatives: recently observed, recently updated, name. Source edit time and in-person observation time must not share the same label. Screen-reader users can perform everything available through pins here.
+
+S04 Filters
+Categories; manufacturer; fixed/relocatable/historical mobile; source-backed/community-reported/disputed; observation-age range; include removed records (off). Explain "recently observed" excludes records with only source-edit timestamps. Reset and Show results. Choices persist locally. Do not filter unknown facts as if false.
+
+S05 Camera detail sheet and full page
+Collapsed sheet: type/name, source badge, approximate distance, Save bookmark, Record observation, Share.
+Expanded: summary; photo if licensed/user-owned; exact evidence field list; source cards; chronology; catalog link; local observations. Four independent panels: Hardware, Location, Operator, Network connections. Unknown fields read "Not established." A manufacturer badge is never an operator badge.
+Distance microcopy: "About 420 ft from your location · straight-line" or "About 420 ft from chosen point." Show source coordinate quality and phone horizontal accuracy separately. Offer distance details on tap.
+Secondary actions: Add source; Mark a local correction; Export; Open location in system maps. Opening external maps is user-driven and discloses that coordinates go to that app. No route that claims to avoid every camera.
+
+S06 Identify landing
+Two large actions Take a photo / Import a photo. Below: Identify without a photo; Browse equipment guide. Copy: "Compare visible features. Keep uncertain identifications uncertain." No faux scanning overlay. Show that the guided identification tool works offline.
+
+S07 Capture/import
+Request camera only when taking a photo; use limited system photo picker for imports. Still photos only in core, no microphone. Capture whole mounting context and optional closer view from a lawful position. Let user add up to 12 photos per observation. Do not instruct approaching a device, climbing, touching it, or entering property. Allow imported images when camera access is denied. Imported EXIF time/location are labeled photo metadata, not verified phone readings.
+
+S08 Guided identification
+Stepper with visible progress and Back: 1 Photo; 2 Features; 3 Place; 4 Review.
+Features: mounting (pole/streetlight/building/gantry/trailer/vehicle/other), form (box/bullet/dome/multi-lens/sensor/unknown), visible branding/model text, solar panel presence, apparent orientation, reason for category selection. Every question has Unknown/Skip. Display relevant catalog entries with "Why this may match" and "What would distinguish it." Rules filter candidates; they do not output invented probabilities. User can choose Unknown, Possible family, or an exact model supported by readable labeling/documentation. "Looks like" never becomes "confirmed."
+Photo AI is an extension, not a hidden dependency. Implement a typed provider interface and disabled-by-default feature flag, with no fake inference. If no independently evaluated licensed on-device model exists, ship the complete manual guide. Cloud analysis, if later enabled, requires explicit per-use consent, a privacy disclosure and a server-side key; it can propose candidates only. All core flows must work without it.
+
+S09 Place and distance
+Show two visibly different pins: photographer/reference position and equipment position. Never silently save the phone GPS as the camera's coordinates. User selects a visible equipment pin or links an existing mapped installation. Offer "Equipment location uncertain" with an approximate area, or save with no equipment coordinate. Show coordinate provenance: source map / user placed / photo metadata. Attach location uncertainty if known; do not manufacture it.
+Distance is available only when both coordinates have meaningful provenance; make imported/historical versus current distances explicit. Direction may be entered as compass/cardinal data; unknown is valid. Do not draw a camera coverage cone from a guessed angle or marketing range.
+
+S10 Observation review/save
+Readable summary with photo, equipment category, identification basis, location, event time, source links, notes, and privacy choices. Save observation commits evidence and metadata transactionally to local storage; displays actual saved state and ID. If bytes cannot be copied or disk is full, keep a recoverable draft and say what failed. Default: private record. No public submission checkbox preselected. User can save uncertainty; no requirement to fabricate missing fields.
+
+S11 Notebook
+Header Notebook, search and collection filter. Sections Observations / Bookmarks. Card list grouped by date, with thumbnails, type, place and evidence count. Multi-select export/delete. Empty state teaches the first action and offers Explore / Record observation. Search local notes, vendors, type, place and source titles. Do not index raw plate/face identities.
+Bookmarks remain linked to public record IDs; observations freeze the source version seen when saved. Deleting a bookmark never deletes a separate observation.
+
+S12 Record detail
+Hero evidence photo with Original / Redacted preview selector; private originals clearly marked. Timeline shows capture/import, save, appended notes/corrections, derived exports. Source claims and personal notes are visually distinct. Permanent primary Share / export action. "Edit details" appends a revision and preserves the earlier version; photos are not overwritten. A correction can supersede a classification without pretending the old one never existed. Delete is a genuine user-controlled delete, with the limitations of shared/backed-up copies explained only when relevant.
+
+S13 Source detail
+Title, publisher, source type, URL, publication date if known, retrieved date, which claim it supports, relevant page/section, snapshot/hash when available and permitted. Open source button. Download failure or unavailable source is visible. A source URL is not a verified claim by itself. Government agency adoption documents belong at agency level unless they give actual equipment coordinates.
+
+S14 Share studio
+Full-size preview first. Segmented formats Portrait / Square / Story / Wide / Report / Evidence. Bottom content choices: photo or clean diagram, camera coordinate disclosure, date granularity, location label, sources. Original personal location, route, exact observation time, freeform private notes and original photo metadata are off by default. Explain the chosen export in a single privacy summary. Inspect photo redactions and metadata, then Share / Save file. Platform labels suggest a layout, not a promise that an app accepts that format.
+
+S15 Redaction editor
+Non-destructive crop, rotate, solid-mask rectangle and adjustable mask shapes. Undo/redo, reset, zoom and pan, full preview. Solid masks are preferred for faces/plates; blurred previews are not sufficient for sensitive identifiers. Optional automated region suggestions never replace user review. The exported derivative is rasterized so masks cannot be removed; strip metadata, embedded thumbnails and source filenames. Preserve the original privately. Require a review step before publishing photographs; allow a photo-free schematic alternative.
+
+S16 Learn home and catalog
+Readable cards: Identify equipment; What a map can prove; Your rights; Ask for public records; Sources and accuracy. Search vendor/model aliases. Product pages show what it does, commonly visible cues, lookalikes, what appearance cannot tell you, and linked sources. Use original schematic illustrations with labels; they are aids, not evidence photos. Do not train or ship with scraped copyrighted product photos without permission/license.
+
+S17 Rights page
+Title "Why public camera mapping can be lawful"; jurisdiction chip U.S. overview; last source-check date; a concise lead; expandable topics; inline citations; print/share text. No giant disclaimer replacing useful content. Use the draft in section 14. Other countries show "Local guidance not provided" rather than applying U.S. law abroad. Connecticut supplement is separate and carries its own validation status.
+
+S18 Public-records request builder
+Choose agency manually or from a sourced agency record; select contracts, placement records if disclosable, policies, retention, sharing agreements, audits or aggregate statistics. Enter date range and maximum fee before consultation. Generate a polite editable draft and source list. Save/export/copy only; never auto-send. Ask for existing records, not a newly invented analysis; acknowledge exemptions, redaction and fees. Do not promise release of identifiable plate histories or security-sensitive details.
+
+S19 Data and offline regions
+List downloaded camera-data regions with source, retrieval time, observation freshness distribution, size and Delete/Refresh. Core offline scope: local camera records, catalog, rights text, notebook and exports. Offline basemap only if the provider/license explicitly permits it. Otherwise "Map background unavailable offline" with a working list and coordinate diagram. Downloads resumable; failed refresh preserves last known good dataset with a stale label.
+
+S20 Backup and restore
+Export encrypted notebook backup to a user-chosen destination; optional OS document provider. Confirm passphrase, explain loss cannot be recovered by Sightline, and support password managers. Restore previews record/media counts and handles conflicts without overwriting silently. Public evidence export and private backup are different formats and different buttons. No cloud sync toggle pretending a backend exists.
+
+S21 Settings / privacy
+System/light/dark; distance units; haptics; lock notebook with device authentication; location behavior; camera-data refresh; region storage; backups; delete data; privacy; third-party licenses; methodology; version. App lock is optional device authentication, not an account. No analytics enabled by default. A small diagnostics screen shows app/version/provider errors with private data removed, exportable only at the user's request.
+
+7. REQUIRED FLOWS AND STATES
+
+Flow A: Launch → Explore a place → map/list → camera detail → source → bookmark. No OS location permission required.
+Flow B: Use my location → permission → nearby list → detail → distance details → record observation. If accuracy is poor, usable navigation continues with a clear qualifier.
+Flow C: Identify → photo → features → place equipment separately → review → private save → restart app → same record intact.
+Flow D: Record → Share studio → redact → preview → native share sheet or save. Cancel is not successful posting.
+Flow E: Notebook → collection → evidence PDF/ZIP → import/verify on another installation without account.
+Flow F: Offline cold start → existing region/list/catalog/record → new capture → save → export. No spinning network blocker.
+
+Every async surface needs loading, empty, offline/stale, partial-error, retry, cancellation, success and permission-denied states. Preserve the draft across interruption and app restart. Long exports show progress/cancel and never freeze navigation. No destructive action as the default focused button.
+
+8. DATA MODEL: CLAIMS BEFORE CONCLUSIONS
+
+Implement runtime-validated schemas, migrations and stable UUIDs. A source claim is not a single global verification flag.
+
+CameraInstallation:
+ id; externalIds[] {namespace,elementType,id,version}; category; capabilities[];
+ manufacturerId|null; familyId|null; modelId|null; deploymentMode;
+ geometry {lat,lon,precisionMeters|null,method,sourceId}|null;
+ orientations[] {degrees,trueOrMagnetic,sourceId,quality};
+ operatorClaimIds[]; networkClaimIds[];
+ lifecycle {reportedPresent|removalReported|removedDocumented|disputed|unknown};
+ firstReportedAt|null; lastObservedAt|null; sourceModifiedAt|null; fetchedAt;
+ sourceClaimIds[]; regionIds[]; privateOverrideIds[]; schemaVersion.
+
+Source:
+ id; kind {officialRecord,manufacturer,communityMap,userPhoto,news,other};
+ title; publisher; url|null; publishedAt|null; accessedAt;
+ licenseId|null; sourceRecordId|null; sourceVersion|null;
+ documentPageOrSection|null; localSnapshotPath|null; snapshotSha256|null;
+ availability; attribution; retrievalMethod.
+
+Claim:
+ id; subjectId; fieldPath; value; sourceId; evidenceAttachmentIds[];
+ basis {sourceReported,directlyObserved,inferred};
+ status {unreviewed,supported,disputed,superseded};
+ notes; validFrom|null; validTo|null; createdAt; supersedesClaimId|null.
+
+Observation:
+ id; installationId|null; revision; observedAt|null; observedAtBasis;
+ deviceRecordedAt; deviceTimeZone; importedAt|null;
+ observerLocation|null {lat,lon,horizontalAccuracyM,fixTimestamp,method};
+ equipmentLocation|null {lat,lon,uncertaintyM|null,method};
+ distanceSnapshot|null {meters,algorithm,computedAt,referenceKind,inputsVersion};
+ category; candidateFamilyIds[]; selectedFamilyId|null; identificationBasis;
+ localNotes; attachments[]; sources[]; claimIds[]; sourceRecordSnapshot;
+ collectionIds[]; visibility='private'; schemaVersion; previousRevisionHash|null.
+
+Attachment:
+ id; relativePrivatePath; mime; bytes; originalFilenamePrivate|null;
+ origin {inAppCapture,import}; sha256; width; height;
+ originalMetadataPrivate; acquiredAt; derivativeOf|null;
+ transformations[]; publicDerivativePath|null; publicDerivativeSha256|null.
+
+Also implement Collection, Bookmark, DataRegionManifest, ExportManifest, LegalArticle, CatalogEntry and Settings. LegalArticle includes jurisdiction, sourceIds, sourceCheckedAt, effectiveDateNotes and reviewStatus. CatalogEntry includes current labels, legacy aliases, confirmed features, unknowns, lookalikes and sourceIds.
+
+Catalog and agency records are not counted as individual physical cameras. Multi-head housings and nearby separate poles are not deduplicated solely because coordinates are close. Preserve original external identity. A "potential duplicate" suggestion can group records for review without deleting any evidence.
+
+9. SOURCE INGESTION, COVERAGE AND LICENSING
+
+Primary starting point: OpenStreetMap surveillance/ALPR records. DeFlock's public project demonstrates the community mapping ecosystem, but is not an official complete Flock inventory and does not imply a supported unrestricted private API. Its mobile source is AGPL-3.0; build an original implementation. Do not copy its app code or assets into a differently licensed project without satisfying the license. OSM data licensing and app-source licensing are separate. [D1,D2,D3]
+
+Use OSM stable IDs and source versions. Recognize man_made=surveillance with surveillance:type=ALPR/camera/gunshot_detector; retain raw tags. Normalize case/known synonyms carefully and record normalization rules. Treat highway=speed_camera and appropriate enforcement relations as a separate adapter. Unknown surveillance types must not default to ALPR. Avoid treating relation centroids or agency addresses as exact physical camera coordinates. [D3]
+
+Implement a bounded ingestion CLI and a read-only region adapter. Baseline pipeline:
+ - Fetch a chosen bounded region using an allowed OSM extract/Overpass endpoint.
+ - Validate geometry, attribution, timestamps, content type, limits and stable IDs.
+ - Normalize into installation/claim/source tables.
+ - Write region.json (or compressed equivalent), manifest, attribution and reproducible ingestion log.
+ - Preserve published observation dates separately from source timestamps.
+ - Merge source updates without overwriting private records or deleting observations.
+ - Missing on one refresh is not proof of physical removal.
+
+Provide an actual working small-region retrieval path for initial testing; choose a modest area around Fairfield, CT as the default optional import, not fabricated local pins. Do not assert any individual local installation unless retrieved from a real source. Record what was fetched and when. If upstream is unavailable, allow user-provided GeoJSON import and make the live-source blocker visible. A demo dataset cannot silently fill gaps in real mode.
+
+For development, bounded user-triggered requests to a policy-compliant public endpoint are acceptable. For production, generate/copy permitted regional extracts to an owner-configured static data host/CDN; don't have every phone download the U.S. from public Overpass. The app receives versioned manifests and only fetches selected regions. Backend is not required for the notebook. Public feeds cannot contain user private observations.
+
+Upstream requests: one in flight per provider, timeouts, cancellation, exponential backoff with jitter, respect Retry-After, cache responses, request-size ceiling, safe JSON parsing and preserved stale data. Defaults: 30s network timeout, at most 3 retries; repeated failure returns control to the user. No stealth scraping or endpoint evasion. Validate the selected endpoint's current policy before use. [D7]
+
+Map/data attribution must be visible in app and exports that use that data. Bundle the applicable ODbL notice and fulfill database-distribution obligations, including offering the relevant derived database under its required license where applicable. Do not assume an OSM-derived image makes unrelated private photographs publicly licensed. Preserve license boundaries; document any merged dataset decisions. [D2]
+
+Basemap provider behind an interface. For small interactive development use, OSM standard raster tiles may be used only in compliance with current identification, caching and attribution rules. Never prefetch those tiles for offline packs. Production provider/offline provider is configurable; a provider needing payment/key is an explicit external dependency, not a fake free service. Camera records and basemap tiles have different rights and lifecycles. [D4]
+
+Search defaults: bundled selected-place index, coordinate input, and local downloaded-region search. Optional remote geocoding on explicit submit, with provider disclosure. Do not implement public Nominatim autocomplete or assume a per-device throttle satisfies its aggregate policy. A production geocoder must be permitted for the actual load; default offline search remains useful. [D5]
+
+EFF Atlas is useful for agency technology adoption and context. Its own page directs individual camera locations elsewhere. Represent it as agency-level evidence unless a particular source provides installation coordinates. Verify current dataset license before ingesting; initially link to relevant research rather than pretending agency centroids are camera locations. [D6]
+
+Do not consume proprietary ALPR scan databases, police alerts, or camera video. No Flock/Axon partner credentials are required for this product. Manufacturer pages support the field guide, not live location feeds.
+
+10. DISTANCE ENGINE AND HONEST MEASUREMENT
+
+Use WGS84 latitude/longitude inputs and calculate approximate geodesic/straight-line surface distance. Implement a pure tested function; Haversine with R=6,371,008.8m is sufficient for nearby consumer display, explicitly labeled approximate. Clamp floating-point terms to valid ranges. Handle longitude wrap, antimeridian and identical positions. Retain raw computed meters in records; round only in the UI.
+
+Proposed UI rounding:
+ - Under 100m: nearest 5m / 10ft, unless uncertainty warrants coarser display.
+ - 100m–1km: nearest 10m / 50ft.
+ - Longer: one decimal km/mi, avoiding meaningless precision.
+ - If uncertainty exceeds distance: "Very close to the mapped location; exact distance uncertain." No 0.0m claim.
+
+Timestamp each reference fix. Foreground active mode may use a watch; stop it when the relevant screen/session ends. At >30s age mark the fix old; at >2min label distance "from last location" and stop suggesting it is live. Poor horizontal accuracy >50m gets a visible approximate-location label. These are product thresholds, not guaranteed measurement physics. Manual reference points are never called "your current location."
+
+Display both phone-reported accuracy and source-location uncertainty. Only if both uncertainties are explicitly known, optionally show an illustrative distance envelope using max(0,d-a-b) to d+a+b; label it a rough envelope, not a statistical confidence interval. Unknown source uncertainty stays unknown. Distance to a mapped coordinate is not distance to a camera's optical coverage boundary.
+
+Do not calculate "you were recorded," "in view," "safe zone," or "camera range" from distance. Do not fabricate angle, focal length, power status or line of sight. Source-documented orientation can appear as a direction tick with its own provenance. Published technical ranges belong in a sourced catalog note, not as a live coverage circle.
+
+11. RECORD INTEGRITY AND EVIDENCE EXPORT
+
+Preserve exact acquired/imported bytes for originals. Calculate SHA-256 at acquisition and record it with byte length/MIME. Original storage is immutable through normal app edits; revisions and derivatives are appended. If an import library transcodes HEIC/JPEG, record which bytes were actually received and label the imported derivative honestly; do not claim to preserve an unavailable original.
+
+Evidence ZIP layout:
+ manifest.json
+ records/observation.json
+ records/revisions.json
+ sources/sources.json
+ media/approved-derivative-*.jpg or .png
+ report.pdf
+ README.txt
+ LICENSES.txt
+ checksums.sha256
+
+Default evidence ZIP contains the selected public/sanitized fields and derivatives. A separate explicit private-full-evidence option can include originals and sensitive metadata after a clear review. Notebook backup has its own encrypted format and is not this public ZIP.
+
+Use a deterministic public projection function shared by all export formats. Allowlist exported fields. Never export database rows or local paths wholesale. Re-render images with EXIF/XMP/IPTC and thumbnails removed. Remove observer coordinates, precise capture times by default, private notes, original filenames, hidden layers, EXIF GPS, device identifiers and internal share tokens. Optional exact equipment coordinates require a deliberate choice; do not confuse these with the photographer's coordinates. Sensitive locations can use a generalized place label and photo-free layout.
+
+Manifest fields: schemaVersion, exportId, recordId, recordRevision, exportCreatedAt, selectedDisclosureProfile, exportedClaims, sourceRefs, limitations[], files[] {relativePath,mime,bytes,sha256}, attribution, derivedFromRecordDigest when appropriate. Do not expose a reusable device/install identifier. Avoid recursion: manifest lists payload files but not itself; checksums.sha256 includes the exact final manifest bytes and payload bytes, excluding itself. Hash the final ZIP separately in the export receipt UI.
+
+If maintaining a revision hash chain, define canonical serialization (e.g. a verified JCS implementation), include schema version, and hash only canonical content with a previous-revision pointer. A local hash chain can be rewritten by an attacker controlling the device. It is not a trusted timestamp or an independently authenticated chain of custody.
+
+Ship a verification CLI in the source archive that reads the ZIP safely and recomputes manifest hashes; it must work without the app, account, or network. Verify what exists; an unsigned package can be replaced or rehashed by someone else. Explain "File checksums match this manifest" rather than "The event is proven authentic." No blockchain theater.
+
+Hardcoded limitations on every evidence report:
+ - Mapping/source claims can be wrong or stale.
+ - Phone time, GPS and imported metadata are not independently attested.
+ - A checksum detects a change relative to a known digest; it does not prove the scene, time, location or claim is true.
+ - These materials do not establish that a camera recorded any person or vehicle.
+ - Legal admissibility depends on context; the app does not certify it.
+
+Report design: first page is a handsome one-page summary; appendices contain selected photos, a claim/source table, chronology, methodology and checksums. Use actual text, selectable links, page numbers, generous margins, readable 11–12pt body, and units/times with timezone. Provide a parallel accessible HTML/text report if the selected PDF engine cannot produce a properly tagged accessible PDF. Never label an untagged PDF as fully accessible.
+
+12. SOCIAL EXPORT AND NATIVE SHARING
+
+Implement a genuine native iOS share sheet and Android Sharesheet. Use platform-supported file URI/content grants and MIME types. Respect cancellation. Never imply a social post was published because the sheet opened. Labels: Share sheet opened / Export saved / Sharing unavailable / Canceled. Check actual platform callbacks, whose fidelity varies. [T4,T5,T6]
+
+Output presets are design canvases, not assertions of maximum platform limits:
+ - Portrait 1080x1350: Instagram/Facebook feed and general sharing.
+ - Square 1080x1080: Instagram, Facebook, LinkedIn, Threads, X, Bluesky, Mastodon, Reddit, messaging.
+ - Story 1080x1920: Stories, TikTok photo workflow, vertical sharing.
+ - Wide 1600x900: landscape social/news/community use.
+ - Evidence PDF and sanitized ZIP: email, Files, Drive, messaging destinations that accept them.
+
+Destination support depends on installed apps, OS and their current capabilities. Use generic native sharing plus Save image/file and Copy caption fallbacks. Do not promise direct Instagram posting, TikTok publishing or simultaneous image+caption delivery without implementing/testing the approved current integration. Do not require the user to log into Sightline to share. They may already be logged into the destination app independently.
+
+Add a 9:16 silent MP4 evidence-summary export as a secondary enhancement for Reels/TikTok/YouTube Shorts if a vetted mobile encoder is implementable in this environment. It uses only approved redacted media and the same public projection, with three calm 3-second pages: documented infrastructure / source and date / limitations and source reference. No fabricated footage or stock video presented as observation. If encoder/native validation is unavailable, retain Story PNG as core and record MP4 as an explicit unfinished enhancement. Do not ship a mislabeled PNG-as-MP4 or rely on obsolete unsupported binaries.
+
+Card composition:
+ - Warm canvas, 6% inset, small original Sightline wordmark.
+ - Plain-language headline, max 2 lines: "A documented plate reader near [place]."
+ - One photo or an original coordinate/relationship schematic, not a stolen map screenshot.
+ - Three compact facts: Type; Source status; Date/source freshness.
+ - Optional distance only when enabled and accompanied by what it is measured from. Default public cards omit observer-based distance because it can expose position.
+ - One concise provenance line, source attribution and short source URL where feasible.
+ - Footer: "Location report ≠ proof of recording." Use an accessible equivalent without relying on the symbol in alt text.
+ - Never watermark over evidence or crop away a qualification.
+
+Story layout safe guides: leave generous top/bottom breathing room and keep important information within the middle ~70%; these are conservative design guides, not guaranteed platform safe areas. Preview at actual phone size. If text does not fit, paginate or shorten the user's caption with their review; do not silently remove source/uncertainty labels.
+
+Give users a neutral or question-led caption template generated deterministically from supported claims. Example:
+"This location is listed as a plate reader in [source]. The record was retrieved [date]; its last in-person observation is [date/unknown]. This does not establish whether the device is operating or recorded anyone. Source: [URL]."
+Second variant: "What is the policy for this camera's retention and data sharing? Here is the documented location and source."
+User-written text is labeled their commentary and never converted into a verified fact. Provide Copy caption and Copy alt text. No sensational "you are being watched right now" copy from mere proximity.
+
+Do not create public record URLs by uploading private records automatically. QR codes can point to an existing public source when chosen. Omit QR when there is no real accessible destination. No localhost, fake verification page or guessable private-record URL.
+
+13. PRIVACY AND SECURITY IMPLEMENTATION
+
+Private notebook is local by default. Use native app sandbox protections; implement encrypted sensitive storage with a maintained library where available. Encryption claims must match reality: SQLite is not encrypted by default. If using SQLCipher, enable it through supported build configuration and verify on both native platforms; encrypt attachments separately. OS Keystore/Keychain protects keys. Never hand-roll cryptography.
+
+Public camera cache and private notebook are separate stores. Private store filenames are opaque. Logs, crash output and analytics cannot include photos, coordinates, notes, exported manifests or keys. Disable automatic cloud backup of private databases/media on Android and iOS where the OS permits; document device/system backup limits truthfully. Export is an explicit user action. Clean up temporary public export files on a documented TTL and next launch; don't delete them while an external share target is still reading them.
+
+Encrypted backup uses an audited password-based encryption/container implementation with a modern password KDF, salt and authenticated encryption. Record algorithm/version parameters. Wrong passphrase and corrupted backup fail clearly, without partially replacing the notebook. Avoid unsupported claims of secure deletion from flash storage or copies already sent elsewhere.
+
+Optional biometric app lock covers notebook/photo previews when backgrounding. Explain it is an access convenience, not immunity from an unlocked/compromised phone. Map browsing and public content can remain available without unlocking private records. Make passcode fallback platform-appropriate.
+
+No background location permission for core. No Bluetooth, Wi-Fi scan, local-network, contacts, SMS, advertising tracking or microphone permission. Ask for camera/location only at the moment of use. Do not automatically save captured evidence into the shared photo library. Saving a public derivative to Photos is a user-selected action.
+
+Online providers may see IP address, requested map area and submitted search text. Explain this directly. No-login does not mean anonymous network access. Pure offline mode performs no network requests. Disable external image/font fetching for bundled catalog/legal content.
+
+Treat imported archives/documents as untrusted. Reject path traversal, symlinks, zip bombs, oversize decompressed content, illegal paths, active HTML/scripts, invalid coordinates and unknown schema versions. Default import limit 100MB per archive and 500MB decompressed, adjustable only after a clear size review; stream extraction, enforce per-file limits and never execute imported content. Validate source URLs, avoid javascript/file schemes, and don't auto-fetch arbitrary user URLs server-side. Render plain text notes with safe escaping.
+
+For photos, impose a documented pixel/byte ceiling with graceful downsampling for derivative rendering only; never quietly destroy an original. Keep image decode/export work off the UI thread where possible. Free space checks prevent partial evidence writes. Transactions and crash recovery are required.
+
+14. LEGAL PAGE — READY COPY AND REQUIRED VALIDATION
+
+Use this substantive draft as the U.S. overview. Rewrite only for factual correction, readability or localization; preserve qualifications and citations. This is legal information, not individualized advice. It is not a declaration that all uses or all surveillance deployments are lawful. Obtain a qualified legal review before marketing it as reviewed legal guidance.
+
+TITLE: Why public camera mapping can be lawful
+SUBTITLE: Public observation, truthful documentation and responsible sharing — with real boundaries.
+
+LEAD:
+Sightline is designed to help you observe equipment from places you may lawfully be, keep your own records, and read or share lawfully obtained public information. It does not access camera feeds or law-enforcement databases. In the United States, the First Amendment provides an important basis for public photography, information gathering and discussion of government activity. The details depend on location, conduct and the applicable law. [L1,L2]
+
+PUBLIC OBSERVATION:
+The ACLU explains that photographing things visible in public spaces is generally constitutionally protected. Public visibility is not permission to enter someone else's property: a camera visible from a sidewalk and a camera inside a restricted area present different access questions. Sightline is built around observation from lawful vantage points. Property rules, restricted facilities and valid safety restrictions still matter. [L1,L3]
+
+RECORDING GOVERNMENT ACTIVITY:
+In Fields v. City of Philadelphia (Third Circuit, 2017), the court recognized First Amendment protection for recording officers performing public duties. It also explained that this right is subject to limits, including reasonable time, place and manner restrictions and interference concerns. This is an important example of the legal framework; it is not a Supreme Court ruling about every surveillance map or automatic nationwide permission for every recording. [L2]
+
+READING AND SHARING SOURCES:
+The app supports public understanding by distinguishing a document's contents, an observation and an inference. Use sources you are entitled to access, credit licensed datasets and photographs appropriately, and describe uncertainty. A map pin does not establish that its owner acted illegally or recorded you. The right to discuss surveillance does not erase privacy, copyright or other applicable obligations. [D2; application design rationale]
+
+WHAT THE APP DOES NOT AUTHORIZE:
+Do not trespass, interfere with officers or traffic, damage or obstruct equipment, or access a system without authorization. Still photography and recording a private conversation are not the same legal issue; audio-recording rules vary. The core capture flow takes photographs and does not request microphone access. Do not use this tool to harass people or publish unsupported accusations. [L3; product restrictions]
+
+PUBLIC RECORDS:
+Public-records laws can help you learn which agency bought a system and what policies govern it. For Connecticut agencies, the relevant starting point is the Connecticut Freedom of Information Act, including section 1-210; federal FOIA is not the default law for a town police department. Exemptions, redactions and fees can apply. The request builder prepares a draft for you to review and send; it does not guarantee disclosure. [L4]
+
+WHAT OUR RECORDS PROVE:
+A record can preserve the photograph you supplied, the information you entered, the source version saved, and the app's distance calculation. A checksum helps compare file integrity. Neither a checksum nor a location pin establishes that a camera was active, captured you or shared your data. Device timestamps and locations are not independently verified. [application methodology]
+
+JURISDICTION AND UPDATES:
+This overview concerns the United States. Rules can differ by state and place and change over time. Read the linked sources and seek local legal advice for a specific dispute. Each article shows when its sources were checked. No reviewed guidance is provided here for other countries.
+
+CONNECTICUT SUPPLEMENT — IMPORTANT RESEARCH STATUS:
+Do not reuse the 2024/2025 text of section 52-571j as though it is the final current statute. An official Connecticut agency's September 9, 2026 notice identifies Public Act 26-14 and changes concerning recording officers, with different effective dates for different sections. The official act was found, but repeated retrieval of the full legislative text failed during preparation of this handoff. That leaves precise current-text interpretation and any litigation/injunction status unresolved. [L5,L6]
+
+Before displaying specific Connecticut remedies, exceptions, ALPR retention deadlines or rules about federal officers, fetch and read the current enacted text and check relevant subsequent orders/amendments. Never treat a raised bill or committee amendment as enacted law. If unavailable, ship the U.S. overview and a Connecticut box saying: "Connecticut changed relevant law in 2026. Current state-specific details need confirmation; see the official resources below." Keep the actual official links. This narrow unresolved legal update must not halt the rest of the build. Do not claim an attorney reviewed the page.
+
+Legal content model must separate user documentation rights, data/source licensing, and the legality of a camera operator's deployment. Those are different questions. Keep First Amendment protections distinct from Fourth Amendment limits on government tracking. Do not use a court decision about police use of ALPR to claim this app's user automatically has a particular immunity.
+
+15. PUBLIC-RECORDS DRAFT — IMPLEMENT AS A TEMPLATE
+
+Subject: Public-records request concerning [agency]'s [system/program]
+
+Hello,
+
+I request electronic copies of existing records concerning [agency]'s use of [camera/system/program] for [date range]:
+
+[Selected categories: contracts and amendments; purchase records; existing deployment/location records to the extent disclosable; written use and retention policies; data-sharing agreements; audit policies and existing audit reports; existing aggregate usage statistics.]
+
+Please provide reasonably segregable nonexempt portions if any material is withheld and identify the legal basis for withholding. I prefer electronic delivery in the records' existing electronic format where available. Please contact me before incurring fees exceeding [amount]. If another office holds these records, please let me know the appropriate contact.
+
+Thank you,
+[User-provided name/contact, optional until sending]
+
+Do not prefill invented officials, addresses, legal deadlines, fee waivers or personal identifiers. Use state-specific citations only where validated. Let the user edit everything. Template generation happens locally and does not transmit the request.
+
+16. TECHNICAL ARCHITECTURE
+
+Preferred stack: React Native + TypeScript + Expo development builds, Expo Router, native MapLibre, SQLite-based persistence, schema validation, a small centralized state layer and native sharing/camera/location integrations. Expo Go is not the target: MapLibre's official instructions require a native rebuild/config plugin. [T2,T3]
+
+First inspect current stable compatibility and lock actual versions in a lockfile. Do not blindly install every latest package independently. Record chosen Expo/RN/MapLibre versions and why they work together. Use supported Node/JDK/Android toolchain versions. Use maintained packages with licenses compatible with distribution. Keep private encryption dependencies out of an unsupported web path.
+
+Recommended structure:
+ app/ : routes and screen composition
+ src/design/ : tokens, themes, primitives
+ src/features/explore, identify, notebook, share, learn, settings/
+ src/domain/ : schemas, claims, distance, privacy projections, hashing contracts
+ src/data/ : repositories, migrations, region import, source adapters
+ src/platform/ : camera, files, encryption, share, map, permissions
+ content/catalog/ and content/legal/ : versioned data with source IDs
+ tools/ingest/, tools/verify-evidence/, tools/content-check/
+ tests/unit/, tests/integration/, tests/e2e/
+ docs/ : decisions, sources, privacy, build instructions, status
+
+Keep business logic independent of React Native and deterministic for unit tests. A repository interface separates private records from public camera datasets. Bounded in-memory caches and local spatial indices prevent loading every record into UI components. Query by viewport/bounding box then precise distance where appropriate. Cluster pins and virtualize lists. Identical filters power map and list.
+
+Web preview uses .web implementations: MapLibre GL JS or a compatible map renderer, browser file/camera fallbacks and IndexedDB storage. Show "Browser preview" plus which native integrations cannot be demonstrated. Avoid browser SQLite experimental setup blocking native delivery. Do not weaken native encryption because web preview lacks the same APIs; preview uses separate demo/test data and explains its limits.
+
+Exports: one shared public-projection model; one deterministic layout engine for SVG/raster cards, one report renderer, and native file sharing. Use an audited image/PDF pipeline; keep source links selectable. Export rendering should be resolution-independent and tested at all presets. No screenshot-of-the-entire-app as the evidence report.
+
+The core application requires no owner-operated API server or LLM endpoint. Optional production region hosting is static and read-only. Optional future community submissions would need abuse controls, moderation, explicit consent and a real deletion/correction workflow; do not quietly build an unmoderated anonymous publishing backend. Core observations remain private and shareable by file.
+
+Supply .env.example with no secrets. All provider URLs and public keys are documented. Secret AI/backend keys cannot be embedded in a mobile binary. No sample key should look like a working credential. Never check signing secrets into Git. Provide clean build scripts, migrations, lint/typecheck/test commands and release signing instructions.
+
+17. PLATFORM-SPECIFIC REQUIREMENTS
+
+iOS:
+ - Correct safe areas, home indicator, status bar, Dynamic Type, VoiceOver and back gestures.
+ - Privacy permission strings state the real purpose; only When In Use location for core.
+ - Limited Photos picker; no broad library request if unnecessary.
+ - Native share sheet anchored correctly on iPad.
+ - File protection, Keychain choices and backup exclusions verified in generated native config.
+ - Relevant privacy manifests, SDK disclosures and store privacy answers drafted from actual dependencies/traffic, not wishful thinking.
+
+Android:
+ - Edge-to-edge layout/insets, gesture navigation and predictive-back compatibility where supported.
+ - TalkBack, font scale, keyboard navigation where relevant.
+ - Handle approximate-only location; don't badger users for precise permission.
+ - System photo picker and scoped storage.
+ - Sharesheet with temporary content URI grants; no exposed private filesystem paths.
+ - Verify backup/data-extraction rules and Keystore behavior.
+ - Draft Play Data Safety answers from actual behavior.
+
+Both: no background tracking in core; pause location watches when backgrounded; recover photo/save interruptions; handle denied/restricted/revoked permissions. Support current stable platforms and the oldest version supported by the chosen native stack, documenting actual minimums instead of guessing them now.
+
+"Share to" core means outbound sharing from Sightline to other apps. As a secondary enhancement, support importing a shared image/URL into Sightline through an Android intent and iOS share extension if feasible; otherwise keep the working in-app system file/photo picker. If implementing inbound sharing, require review before saving or fetching a URL; never auto-upload a received file. Do not let extension scope delay the required outbound share experience.
+
+18. ACCESSIBILITY, PERFORMANCE AND QUALITY BUDGETS
+
+Design for 320–430 logical-width phones and larger tablets; no clipped controls. At 200% text size, critical flows remain complete. All map actions have list/form equivalents. Meaningful labels, roles, focus order, error announcements and selected states. No information conveyed only by map position, icon, haptic, audio or color. Dark mode and Reduce Motion are functional.
+
+Targets, to be measured and reported rather than asserted:
+ - Cold start to usable locally cached interface around 3 seconds on a representative midrange device.
+ - Smooth scrolling/map interaction around 60fps where the device supports it.
+ - Saving a record with small images gives immediate feedback and durable completion without losing originals.
+ - No unbounded RAM growth when importing a region or exporting many records.
+ - No GPS watch left running outside active foreground use.
+ - Large images processed with memory limits and clear progress.
+
+Use at least small-phone, large-phone and 200%-font screenshots, light/dark. Browser responsiveness tests are not equivalent to real native-device tests; report each separately.
+
+19. EXECUTION PLAN INSIDE YOUR SUPERNINJA TASK
+
+Phase 0 — persist the assignment and environment assessment.
+Read the complete brief. Save it as docs/BUILD_SPEC.txt. Create docs/STATUS.md, docs/DECISIONS.md and docs/BLOCKERS.md. Check shell, Node, package/network access, Java/Android SDK, emulator availability, macOS/Xcode availability and credentials only where explicitly supplied. Don't expose secrets. Write an honest capability matrix. Confirm compatible dependencies against official docs.
+
+Phase 1 — vertical slice before polishing everything.
+Create native project and browser companion. Build Explore list/map, camera detail, source provenance, location/reference distance, observation save and a basic real export. Use separate marked test fixtures. Attempt a small real source ingestion. Prove persistence across restart. Run initial native compile as early as possible so native configuration errors don't surface only after the whole UI is built.
+
+Phase 2 — complete product flows.
+Build all core screens, catalog content, local notebook/collections, redaction, share studio, sources, rights/request builder, offline camera data and encrypted backup/restore. Implement full data validation, duplicate/conflict handling and actual error states. Replace every demo-only core path with the real adapter or explicit error/fallback.
+
+Phase 3 — visual finishing.
+Apply the design system coherently. Capture screens. Check spacing, text wrapping, image crops, touch targets, sheet heights, bottom navigation, contrast, native back behavior and source attribution. Fix what looks cheap or unfinished. Export and inspect the actual PNG/PDF artifacts; do not judge only the preview component.
+
+Phase 4 — acceptance and repair.
+Run the acceptance checklist below. Reproduce failures and fix them. Focus testing on privacy projection, evidence integrity, persistence, source semantics, distance and native integration. Do not generate hundreds of shallow tests to inflate a count. Run security/dependency checks and review any native library limitations. If a feature is unavailable due to infrastructure, preserve the code, state the exact limitation and keep completing independent features.
+
+Phase 5 — delivery.
+Produce clean source archive without node_modules, secrets, caches or user evidence; lockfiles; Android build artifacts if actually built; iOS project/build configuration and signed or simulator artifact only if actually built; reproducible build README; test logs; screenshots; sample social exports; sample PDF and evidence ZIP using clearly marked demo data; licenses/source register; a brief remaining-actions checklist.
+
+Make checkpoints after each phase. Commit locally when safe; no force pushes or destructive resets of supplied work. If context/runtime is approaching its limit, update STATUS/BLOCKERS with exact command/output pointers and next actions, and save the current working source. Never claim completion because the task is nearly out of time.
+
+Do not burn the run re-researching the entire camera industry. This specification settles the product. Narrow research is for current package compatibility, current provider terms, a real selected data source and the explicitly unresolved legal point. Do not stop for aesthetic preference questions.
+
+20. ACCEPTANCE CHECKLIST — REQUIRED EVIDENCE
+
+For each test record PASS / FAIL / NOT RUN, platform, command or procedure and evidence path. NOT RUN is not PASS.
+
+A01 Fresh launch reaches useful Explore without login or notification permission.
+A02 Location denied still supports manual place/coordinate reference, list, record and export.
+A03 Approximate/stale fixes produce accurate qualifiers; no fake live distance.
+A04 Distance test cases include identical points, known approximately 1-degree equatorial separation, poles, antimeridian, invalid inputs and unit conversions.
+A05 Equipment pin is independent from photographer position; missing equipment coordinates cannot yield invented distance.
+A06 A community-map record, official deployment document and manufacturer capability page retain distinct scopes and labels.
+A07 Import of agency-only Atlas context never creates a fake camera pin at headquarters.
+A08 Unknown vendor/network/operator stay unknown; no unsupported "recorded you" copy.
+A09 Historical mobile observation is timestamped and excluded from the current fixed-infrastructure layer by default.
+A10 Real bounded camera-data import preserves source IDs, attribution and timestamps; count reflects actual imported records, not fixtures.
+A11 Demo mode is visibly labeled, uses a separate store and marks every exported artifact DEMONSTRATION — NOT A REAL SIGHTING.
+A12 Capture/import → private save → kill/relaunch → evidence/notes intact.
+A13 Disk full, canceled picker, inaccessible image and crash during save recover without corrupting the notebook.
+A14 Edit creates a revision; original photo checksum remains unchanged.
+A15 Default social PNG and PDF contain no observer location, exact private timestamps, original EXIF, private notes, device IDs or hidden unredacted layers. Test with deliberately sensitive fixture metadata.
+A16 Redacted export cannot reveal covered pixels by removing a PDF layer or reading a thumbnail. Original remains intact in private storage.
+A17 All four image presets render legibly without cropped sources/limitations; inspect generated files visually.
+A18 Native share works on available iOS/Android target; canceled sheet does not claim a successful post. Unsupported app/path has a real Save file/Copy caption fallback.
+A19 Evidence CLI verifies a good export, rejects a modified payload, rejects path traversal and reports unknown schema safely. Report explicitly distinguishes integrity from authenticity.
+A20 Backup restores records/media and fails cleanly for wrong passphrase; merge collision handling preserves both versions pending review.
+A21 Offline cold start opens cached records/catalog/rights and can create/export an observation. Network failures do not replace real data with demo pins.
+A22 OSM attribution is visible on map and applicable exports. No prohibited offline downloading of OSM standard tiles.
+A23 Public source refresh cannot overwrite private evidence or infer removal from a transient missing record.
+A24 VoiceOver/TalkBack or equivalent available checks cover navigation, list, form, error and share preview. Report manual native checks not available as NOT RUN.
+A25 200% font and reduced motion work in critical flows; contrast meets stated targets.
+A26 Network/privacy inspection shows no unrequested uploads or trackers; offline mode makes no requests. No microphone/Bluetooth/background-location entitlement in core.
+A27 Legal page contains substantive sources, jurisdiction/date labels and the unresolved-state safeguard where needed; no unconditional legality or attorney-review claim.
+A28 No runtime secret keys, signing credentials, private files or real personal data in source archive.
+A29 Android project compiles if toolchain available; record actual artifact path and build command. iOS compile/simulator/signing status is separately recorded.
+A30 Web preview route and core interactions work, with native-only limitations visible. Passing this alone does not satisfy A29.
+A31 One-command lint/typecheck/unit/integration commands are documented and run where supported; errors are fixed or specifically recorded.
+A32 Existing-source links and catalog schema validation pass; broken factual links are flagged rather than silently fabricated.
+
+21. DELIVERY MESSAGE FORMAT
+
+Begin with what I can open/run now. Then provide:
+- Source archive / repository path and commit.
+- Android: built/tested/artifact or exact blocker.
+- iOS: built/tested/artifact or exact blocker.
+- Browser review preview, clearly labeled.
+- Screenshots and sample social/report/evidence exports.
+- PASS/FAIL/NOT RUN summary with links to the full acceptance log.
+- Remaining external requirements: actual signing, optional provider configuration, legal update verification or native device checks. No invented completion date.
+- Features implemented and optional enhancements unfinished.
+
+Do not say "production ready" if signing, device validation, legal content checks or required acceptance items are incomplete. Do not let that wording restriction prevent delivery of the complete working code and reviewable artifacts you have built.
+
+22. SECONDARY ENHANCEMENTS — ONLY AFTER CORE WORKS
+
+These are deliberately distinguished from required core functionality; preserve them in a clear backlog if not completed:
+- Incoming iOS/Android share extension for photos and URLs.
+- Silent MP4 social export.
+- User-started foreground field session with local notes and a manual stop; no automatic route history.
+- Local reminders to revisit a saved observation; never assume it means a device remains there.
+- Change comparison between two documented observations of one installation.
+- External public-records document attachments with exact cited page references.
+- Offline licensed basemap packs when a permitted provider is configured.
+- Evaluated on-device visual model with explicit uncertainty and opt-in cloud fallback, if any.
+- Moderated public contributions without mandatory login only after a real abuse/deletion design and hosting authorization.
+
+Do not add leaderboards, stalking-style alerts, face/plate recognition, subscriptions, speculative risk scores or social feeds to pad the feature list.
+
+23. SOURCE REGISTER — RESEARCH INPUTS, NOT APP ENDPOINT GUARANTEES
+
+Checked during preparation on October 6, 2026 unless noted otherwise. Product sites establish marketed families/capabilities; official technical docs establish supported integration patterns; civil-rights and court materials support the qualified rights overview. Availability of a URL does not grant a scraping/republication license. Preserve source scope. Recheck details that have changed at implementation time.
+
+N1 — NinjaTech, SuperNinja product page: dedicated computer and autonomous multi-step work.
+https://www.ninjatech.ai/product/super-ninja
+N2 — NinjaTech, AI Code Generator: VM/editor and multi-file coding workflow.
+https://www.ninjatech.ai/product/ai-code-generator
+N3 — NinjaTech, SuperNinja complete guide, dated January 12, 2026: Tasks vs Chat; its model/pricing details are older and not used as promises here.
+https://www.ninjatech.ai/blog/superninja-your-complete-guide
+
+C1 — Flock product hub: current categories, video, audio, trailers, drones and software.
+https://www.flocksafety.com/products
+C2 — Flock current LPR page: current family labels and plate/vehicle functionality.
+https://www.flocksafety.com/products/license-plate-readers
+C3 — Flock 2023 product announcement and later alias reference: legacy Falcon SR/LR and older product names.
+https://www.flocksafety.com/blog/product-announcement-q2-2023
+https://www.flocksafety.com/blog/top-10-questions-answered-from-flocks-community-safety-webinar
+C4 — Flock video cameras; legacy Condor URL resolves into this product category.
+https://www.flocksafety.com/products/video-cameras
+https://www.flocksafety.com/products/condor
+C5 — Flock gunshot/audio detection and 2026 explanation identifying Raven as its former name.
+https://www.flocksafety.com/products/gunshot-detection
+https://www.flocksafety.com/blog/how-flocks-audio-detection-works
+C6 — Axon Outpost.
+https://www.axon.com/products/axon-outpost
+C7 — Axon Lightpost.
+https://www.axon.com/products/axon-lightpost
+C8 — Axon Fleet 3 and ALPR guide.
+https://www.axon.com/products/axon-fleet-3
+https://www.axon.com/help/fleet-3/cameras-and-sensors/fleet/3/alpr/alpr-introduction.htm
+C9 — Axon Fusus: integration platform, including other connected cameras.
+https://www.axon.com/products/axon-fusus
+C10 — Motorola Solutions L5F.
+https://www.motorolasolutions.com/en_us/video-security-access-control/license-plate-recognition-camera-systems/l5f-fixed-lpr-camera-system.html
+C11 — Motorola Solutions L6Q.
+https://www.motorolasolutions.com/en_us/video-security-access-control/license-plate-recognition-camera-systems/l6q-quick-deploy-lpr.html
+C12 — Genetec AutoVu family.
+https://www.genetec.com/products/unified-security/autovu
+C13 — Leonardo ELSAG fixed readers and Street Sentry.
+https://www.leonardocompany-us.com/lpr/elsag-fixed
+C14 — Leonardo portfolio and VPH900 context.
+https://www.leonardocompany-us.com/lpr/products
+https://www.leonardocompany-us.com/lpr/who-we-serve/physical-security-solutions
+C15 — Rekor Edge Pro.
+https://www.rekor.ai/systems/edge-pro
+C16 — Rekor Edge Max.
+https://www.rekor.ai/systems/edge-max-alpr
+C17 — Rekor Scout, including processing from IP cameras.
+https://docs.rekor.ai/scout
+C18 — Neology neoForce.
+https://neology.com/solutions/enforcement/products/neoforce-anpr-camera/
+C19 — Neology P497.
+https://neology.com/solutions/enforcement/products/p497/
+C20 — Neology P720 mobile.
+https://neology.com/solutions/enforcement/products/mobile-enforcement/
+C21 — Jenoptik ANPR, including VECTOR family.
+https://www.jenoptik.com/products/civil-security/anpr
+https://www.jenoptik.us/products/civil-security/alpr
+C22 — Axis Q1800-LE-3 License Plate Verifier kit.
+https://www.axis.com/products/axis-q1800-le-3
+C23 — Hanwha Wisenet Road AI manufacturer announcement.
+https://www.hanwhavision.com/us/news-events/article/hanwha-techwin-announces-wisenet-road-ai-intelligent-lpr-solution
+C24 — Verra Mobility enforcement categories.
+https://www.verramobility.com/government/safety/
+C25 — Sensys Gatso U.S. red-light enforcement.
+https://www.sensysgatso.com/solutions-road-safety-enforcement/u-s-solutions/red-light-enforcement
+C26 — SoundThinking ShotSpotter FAQ: acoustic system.
+https://www.soundthinking.com/resource-center/faq/shotspotter/
+
+D1 — DeFlock mobile repository: product context and AGPL-3.0 source-license notice.
+https://github.com/FoggedLens/deflock-app
+D2 — OpenStreetMap copyright and ODbL overview.
+https://www.openstreetmap.org/copyright
+D3 — OpenStreetMap surveillance tagging documentation.
+https://wiki.openstreetmap.org/wiki/Tag:man_made=surveillance
+D4 — OSMF standard raster Tile Usage Policy: attribution, caching, no bulk/offline packs.
+https://operations.osmfoundation.org/policies/tiles/
+D5 — OSMF Nominatim Usage Policy.
+https://operations.osmfoundation.org/policies/nominatim/
+D6 — EFF Atlas of Surveillance About: agency adoption scope and guidance on individual camera locations.
+https://www.atlasofsurveillance.org/about
+D7 — OpenStreetMap Overpass documentation; also inspect the chosen instance's actual policy.
+https://wiki.openstreetmap.org/wiki/Overpass_API
+
+L1 — ACLU Photographers' Rights: general public-space photography framework.
+https://www.aclu.org/issues/free-speech/photographers-rights
+L2 — Fields/Geraci v. Philadelphia, Third Circuit opinion, July 7, 2017, hosted by U.S. DOJ; protection and limits for recording public police activity.
+https://www.justice.gov/crt/case-document/geraci-and-fields-v-philadelphia-court-appeals-decision
+L3 — ACLU public photography/recording explanation. Older general guidance; do not use its old state-specific discussion as a current 50-state legal survey.
+https://www.aclu.org/news/free-speech/it-legal-photograph-or-videotape-police
+L4 — Connecticut FOIA chapter and 2026 supplement; searchable statutory text found, full page retrieval failed in preparation. Revalidate text before adding detailed state-specific claims.
+https://www.cga.ct.gov/Current/pub/chap_014.htm
+https://www.cga.ct.gov/2026/sup/chap_014.htm
+L5 — Connecticut Public Act 26-14, SB397. Official act located; full-text retrieval failed. Resolve before detailed interpretation, and check subsequent amendments/orders.
+https://www.cga.ct.gov/2026/act/pa/pdf/2026PA-00014-R00SB-00397-PA.pdf
+https://www.cga.ct.gov/asp/CGABillStatus/cgabillstatus.asp?bill_num=SB397&selBillType=Bill
+L6 — Connecticut Office of Early Childhood, official September 9, 2026 notice identifying the act and recording-related changes. Supports existence of the update, not a complete legal analysis.
+https://www.ctoec.org/news/recent-ice-presence-in-ct-know-your-rights-regardless-of-immigration-status/
+
+T1 — Expo EAS Build: native cloud builds and separate signing/build environment requirements.
+https://docs.expo.dev/build/introduction/
+T2 — MapLibre React Native Expo setup: native plugin/rebuild; incompatible with Expo Go.
+https://maplibre.org/maplibre-react-native/docs/setup/expo/
+T3 — Expo SQLite reference; validate current native encryption configuration before using.
+https://docs.expo.dev/versions/latest/sdk/sqlite/
+T4 — Expo Sharing reference; verify actual current feature support per platform.
+https://docs.expo.dev/versions/latest/sdk/sharing/
+T5 — Apple UIActivityViewController reference.
+https://developer.apple.com/documentation/uikit/uiactivityviewcontroller
+T6 — Android official sharing documentation.
+https://developer.android.com/training/sharing/send
+
+END OF PROMPT A. Start the implementation now and carry it through the delivery phase.
+
+======================================================================
+PROMPT B — RESUME AN INTERRUPTED RUN
+======================================================================
+
+Continue the existing Sightline project built from the attached SuperNinja_Camera_Transparency_Build_Prompt.txt. Do not start over or replace the native app with a website. Read docs/BUILD_SPEC.txt, STATUS.md, DECISIONS.md and BLOCKERS.md, inspect the working tree and actual build/test artifacts, and reconcile recorded status against what exists. Preserve user work and private data. Resume from the earliest incomplete dependency, then finish all independent core requirements. Resolve routine choices yourself and do not stop at a plan. Narrow external blockers must not halt unrelated work. Repeat only checks needed for changed behavior or an unresolved risk. Update the full PASS/FAIL/NOT RUN acceptance log, native build status, screenshots and artifacts. Deliver the clean source archive and exact remaining external steps. Never turn an unrun iOS or Android check into a pass because the browser preview works.
+
+======================================================================
+PROMPT C — INDEPENDENT PRE-RELEASE REVIEW AND REPAIR
+======================================================================
+
+Audit the existing Sightline project against the attached complete build specification. Treat the implementation's claims as unverified until you inspect or execute them. Do not redesign the product or downgrade its no-login/native/privacy requirements. Focus on actual user-visible failures and evidence integrity: data provenance, camera vs photographer coordinates, source timestamps vs observation dates, distance uncertainty, original-byte preservation, public redaction and metadata leakage, share cancellation, offline persistence, encrypted backup/restore, source licenses, accessibility, legal article scope, native compile status and separation of demo from real data.
+
+Run the required acceptance checks supported by this environment. Reproduce defects, repair them in the existing codebase, and rerun targeted checks. Capture screenshots and inspect actual exported files. Review outgoing requests and generated native permissions. Report each criterion PASS, FAIL or NOT RUN with evidence. Identify a blocking issue by concrete reproduction and impact, not generic advice. Record unsupported native/device/legal verification as an external requirement without claiming production readiness. Deliver the repaired source/artifacts and a concise release decision explaining exactly what is usable and what is still unverified.
+
+END OF HANDOFF

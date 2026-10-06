@@ -1,0 +1,14 @@
+original fixture: 56309 bytes sha256=78815cd524d1cb750a76d4f2dd9b010545bc3c287faaa2fe524562a603ca4904 sensitive segments=APP1 segment (EXIF)
+derivative: 1600x1200 84942 bytes segments=0xE0 0xDB 0xC0 0xC4 SOS sensitive=none
+card-portrait-photo: 1080x1350 png=121542 bytes overflow=none
+card-portrait-schematic: 1080x1350 png=108959 bytes overflow=none
+card-square-photo: 1080x1080 png=99442 bytes overflow=none
+card-square-schematic: 1080x1080 png=100319 bytes overflow=none
+card-story-photo: 1080x1920 png=136244 bytes overflow=none
+card-story-schematic: 1080x1920 png=115848 bytes overflow=none
+card-wide-photo: 1600x900 png=113407 bytes overflow=none
+card-wide-schematic: 1600x900 png=94043 bytes overflow=none
+evidence zip: 188834 bytes sha256=aef540825f44c11e599d7201c03ef22a87dbfafdafdcf1037e6e7220256875cd files=10
+leak scan complete
+verify original: match — File checksums match this manifest
+verify tampered: mismatch — File checksums do NOT match this manifest — CHANGED README.txt

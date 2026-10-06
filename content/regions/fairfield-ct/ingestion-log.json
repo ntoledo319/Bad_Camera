@@ -1,0 +1,15 @@
+{
+  "ranAt": "2026-10-06T11:14:50.630Z",
+  "rawSha256": "301cc277d99d4a9aea15a48ed057161eaec18b010c3e566361ed17dbefc6a4d9",
+  "log": [
+    "query: [out:json][timeout:25][maxsize:16777216];(nwr[\"man_made\"=\"surveillance\"](41.115,-73.33,41.225,-73.195);nwr[\"highway\"=\"speed_camera\"](41.115,-73.33,41.225,-73.195););out meta center;",
+    "endpoint: https://overpass-api.de/api/interpreter",
+    "http: 200",
+    "elements: 76",
+    "installations: 76",
+    "skipped: 0",
+    "byCategory: {\"video\":2,\"alpr\":70,\"acoustic\":4}",
+    "merge: {\"added\":76,\"updated\":0,\"missing\":0}"
+  ],
+  "skipped": []
+}
