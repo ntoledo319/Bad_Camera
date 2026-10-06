@@ -28,7 +28,7 @@ const DIRS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 const label = (s: string) => (s === 'unknown' ? 'Unknown / skip' : s === 'multi_lens' ? 'Multi-lens' : s[0].toUpperCase() + s.slice(1));
 
 export default function NewObservation() {
-  const params = useLocalSearchParams<{ installationId?: string; mode?: string }>();
+  const params = useLocalSearchParams<{ installationId?: string; mode?: string; start?: string }>();
   const s = useStore();
   const { c, dark } = useTheme();
   const router = useRouter();
@@ -75,6 +75,15 @@ export default function NewObservation() {
   }, [d, nb, saved]);
 
   const candidates = useMemo(() => (d ? candidatesFor({ ...d.features }, CATALOG, d.category === 'unknown' ? null : d.category) : []), [d]);
+
+  // Identify tab shortcut: open the camera / picker once when a fresh draft has no photos.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (!d || autoStarted.current || !params.start || d.photos.length > 0 || d.step !== 0) return;
+    autoStarted.current = true;
+    (async () => addPhotos(params.start === 'camera' && CAMERA_SUPPORTED ? await takePhoto() : await importPhotos(MAX_PHOTOS)))();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [d]);
 
   if (!d) return <Loading label="Opening draft…" />;
   const up = (patch: Partial<Draft>) => setD({ ...d, ...patch });
