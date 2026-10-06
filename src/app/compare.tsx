@@ -8,6 +8,7 @@ import { SPACE } from '../design/tokens';
 import { CATALOG, CATALOG_BY_ID } from '../../content/catalog/catalog';
 import { CATEGORY_LABEL } from '../domain/projection';
 import { SchematicView } from '../features/SchematicView';
+import { capitalize } from '../features/format';
 import type { CatalogEntry } from '../domain/schemas';
 
 function Picker({ value, onChange, label }: { value: string; onChange: (id: string) => void; label: string }) {
@@ -36,7 +37,7 @@ function Col({ e }: { e: CatalogEntry }) {
       <SchematicView name={e.schematic} size={80} label={`Illustrative drawing for ${e.familyLabel}`} />
       <T v="heading" style={{ marginTop: SPACE.s }}>{e.familyLabel}</T>
       <T v="small" style={{ color: c.text2 }}>{CATEGORY_LABEL[e.category]}</T>
-      {block('Deployment', e.deploymentModes.map((m) => m.replace('_', ' ')))}
+      {block('Deployment', e.deploymentModes.map((m) => capitalize(m.replace(/_/g, ' '))))}
       {block('Visible cues', e.visibleCues)}
       {block('Distinguished by', e.distinguishers)}
       {block('Older names', e.legacyAliases)}

@@ -128,6 +128,9 @@ export function sourceStatusLabel(sources: Pick<Source, 'kind'>[], claims: Pick<
   if (claims.some((c) => c.status === 'disputed')) return 'Disputed';
   if (sources.some((s) => s.kind === 'officialRecord')) return 'Official record cited';
   if (sources.some((s) => s.kind === 'communityMap')) return 'Community-mapped';
+  if (sources.some((s) => s.kind === 'news')) return 'News report cited';
+  if (sources.some((s) => s.kind === 'manufacturer')) return 'Manufacturer page cited';
+  if (sources.some((s) => s.kind === 'other')) return 'Source cited';
   if (sources.some((s) => s.kind === 'userPhoto')) return 'Personal observation';
   return 'No source attached';
 }

@@ -29,7 +29,11 @@ function pick(capture: boolean, limit: number): Promise<PickResult> {
       }
       resolve(photos.length ? { status: 'ok', photos, failed } : { status: 'error', message: 'The browser preview accepts JPEG images only. Nothing was saved.' });
     };
-    // Detect cancel: focus returns without a change event.
+    // Detect cancel: the input's own cancel event where supported, else focus returning without a change.
+    input.addEventListener('cancel', () => {
+      done = true;
+      resolve({ status: 'canceled' });
+    });
     window.addEventListener('focus', () => setTimeout(() => !done && resolve({ status: 'canceled' }), 800), { once: true });
     input.click();
   });

@@ -2,8 +2,10 @@
 import type { CameraInstallation, Claim, Observation } from '../domain/schemas';
 import { describeDistance, type ReferencePoint, type Units } from '../domain/distance';
 import { CATEGORY_LABEL } from '../domain/projection';
-import { MANUFACTURER_LABEL } from '../../content/catalog/catalog';
+import { CATALOG_BY_ID, MANUFACTURER_LABEL } from '../../content/catalog/catalog';
 import { sourceStatusOf } from '../domain/filters';
+import { haversineMeters } from '../domain/distance';
+import { PLACES } from '../../content/places/places';
 
 export function fmtDate(iso: string | null | undefined, withTime = false): string {
   if (!iso) return 'Not established';
@@ -28,7 +30,18 @@ export function manufacturerName(i: CameraInstallation): string | null {
 export function installationTitle(i: CameraInstallation): string {
   const m = manufacturerName(i);
   const cat = CATEGORY_LABEL[i.category];
-  return m ? `${cat} · ${m} reported` : cat;
+  return m ? `${cat} · ${m}` : cat;
+}
+
+/** Nearest bundled place within 2.5 km, for a human label. Navigation aid only, never evidence. */
+export function nearestPlaceName(lat: number, lon: number): string | null {
+  let best: { name: string; d: number } | null = null;
+  for (const p of PLACES) {
+    if (p.zoom < 14) continue; // neighbourhood-scale entries only; towns are too coarse
+    const d = haversineMeters({ lat, lon }, p);
+    if (d <= 2500 && (!best || d < best.d)) best = { name: `${p.name}, ${p.context.replace(/, CT$/, '')}`, d };
+  }
+  return best?.name ?? null;
 }
 
 export function placeLabelOf(i: CameraInstallation): string {
@@ -36,7 +49,51 @@ export function placeLabelOf(i: CameraInstallation): string {
   const named = t['name'] || t['addr:street'] || t['description'];
   if (named) return named.length > 60 ? `${named.slice(0, 57)}…` : named;
   if (!i.geometry) return 'No mapped coordinates';
-  return `Near ${i.geometry.lat.toFixed(4)}, ${i.geometry.lon.toFixed(4)}`;
+  const place = nearestPlaceName(i.geometry.lat, i.geometry.lon);
+  return place ? `Near ${place}` : `Near ${i.geometry.lat.toFixed(4)}, ${i.geometry.lon.toFixed(4)}`;
+}
+
+export const LIFECYCLE_LABEL = {
+  reportedPresent: 'Reported present',
+  removalReported: 'Removal reported',
+  removedDocumented: 'Removal documented',
+  disputed: 'Disputed',
+  unknown: 'Not established',
+} as const;
+
+const CLAIM_FIELD_LABEL: Record<string, string> = {
+  category: 'Equipment type',
+  'hardware.manufacturer': 'Manufacturer',
+  'hardware.model': 'Model',
+  'hardware.mount': 'Mounting',
+  'location.coordinates': 'Coordinates',
+  'location.direction': 'Facing direction',
+  'observation.checkDate': 'Last in-person check',
+  'operator.name': 'Operator',
+};
+
+export function capitalize(v: string): string {
+  return v ? v[0].toUpperCase() + v.slice(1) : v;
+}
+
+/** Human label and value for a claim. Raw values stay intact in the data and exports. */
+export function claimDisplay(fieldPath: string, value: unknown): { label: string; value: string } {
+  const label = CLAIM_FIELD_LABEL[fieldPath] ?? fieldPath;
+  const raw = value == null ? '' : String(value);
+  if (!raw) return { label, value: NOT_ESTABLISHED };
+  if (fieldPath === 'category') return { label, value: CATEGORY_LABEL[raw as keyof typeof CATEGORY_LABEL] ?? raw };
+  if (fieldPath === 'observation.checkDate') return { label, value: fmtDate(raw) };
+  if (fieldPath === 'location.coordinates') return { label, value: raw.split(',').map((x) => Number(x).toFixed(5)).join(', ') };
+  if (fieldPath === 'location.direction') return { label, value: directionLabel(raw) };
+  return { label, value: /^[a-z_]+$/.test(raw) ? capitalize(raw.replace(/_/g, ' ')) : raw };
+}
+
+/** "120° (SE)" for numeric bearings; free-text directions are shown as written. */
+export function directionLabel(raw: string): string {
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return raw;
+  const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  return `${Math.round(n)}° (${dirs[Math.round((((n % 360) + 360) % 360) / 45) % 8]})`;
 }
 
 export const SOURCE_STATUS_LABEL = { source_backed: 'Source-backed', community_reported: 'Community-reported', disputed: 'Disputed' } as const;
@@ -50,7 +107,8 @@ export function distanceFor(i: CameraInstallation, ref: ReferencePoint | null, u
 }
 
 export function observationTitle(o: Observation): string {
-  const fam = o.identificationLevel !== 'unknown' && o.selectedFamilyId ? ` · possible ${o.selectedFamilyId}` : '';
+  const famLabel = o.selectedFamilyId ? (CATALOG_BY_ID[o.selectedFamilyId]?.familyLabel ?? o.selectedFamilyId) : null;
+  const fam = o.identificationLevel !== 'unknown' && famLabel ? ` · ${o.identificationLevel === 'exact_model' ? '' : 'possibly '}${famLabel}` : '';
   return `${CATEGORY_LABEL[o.category]}${fam}`;
 }
 

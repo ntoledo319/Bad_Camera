@@ -65,7 +65,8 @@
     "samples": "tsx tools/samples/generate.ts",
     "content:check": "tsx tools/content-check/check.ts",
     "export:web": "expo export -p web",
-    "prebuild": "expo prebuild --clean --no-install"
+    "prebuild": "expo prebuild --clean --no-install",
+    "postinstall": "node tools/web/copy-maplibre-worker.mjs"
   },
   "private": true
 }

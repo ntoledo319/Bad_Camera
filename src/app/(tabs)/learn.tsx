@@ -27,7 +27,6 @@ export default function Learn() {
 
   return (
     <Screen scroll>
-      <T v="title">Learn</T>
       <T v="small" style={{ color: c.text2, marginTop: SPACE.xs }}>
         Plain-language guides. Not legal advice. Sources checked {fmtDate(LEGAL_CHECKED_AT)}.
       </T>

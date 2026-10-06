@@ -232,6 +232,8 @@ export const Observation = z.object({
   localNotes: z.string(),
   attachments: z.array(z.string()),
   sources: z.array(z.string()),
+  /** Links the user attached themselves (never fetched by the app). Optional so older revisions hash unchanged. */
+  userSources: z.array(Source).optional(),
   claimIds: z.array(z.string()),
   sourceRecordSnapshot: z.unknown().nullable(),
   collectionIds: z.array(z.string()),

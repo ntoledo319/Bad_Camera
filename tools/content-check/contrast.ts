@@ -20,4 +20,5 @@ for (const [name, T] of [['light', LIGHT], ['dark', DARK]] as const) for (const 
   if (!ok) fail++;
   console.log(`${ok ? 'PASS' : 'FAIL'} ${name.padEnd(5)} ${label.padEnd(40)} ${r.toFixed(2)}:1 (min ${min})`);
 }
-process.exit(fail ? 1 : 0);
+export const contrastFailures = fail;
+if (process.argv[1]?.endsWith('contrast.ts')) process.exit(fail ? 1 : 0);

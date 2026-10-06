@@ -1,15 +1,20 @@
 /** Browser preview map: MapLibre GL JS with the same style, data and layers as native. */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import { View } from 'react-native';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { STYLE_DARK, STYLE_LIGHT, offlineStyle, pinColorExpr, pinGlyphExpr, toGeoJSON, type MapViewProps } from './mapShared';
 
+// Metro can't bundle MapLibre's module worker; it is copied to public/ (tools/web/copy-maplibre-worker.mjs).
+maplibregl.setWorkerUrl('/maplibre/maplibre-gl-worker.mjs');
+
 export function CameraMap(p: MapViewProps) {
   const host = useRef<HTMLDivElement | null>(null);
   const map = useRef<maplibregl.Map | null>(null);
   const latest = useRef(p);
-  latest.current = p;
+  useLayoutEffect(() => {
+    latest.current = p;
+  });
   const styleKey = p.offline ? 'offline' : p.dark ? 'dark' : 'light';
 
   useEffect(() => {
@@ -19,9 +24,11 @@ export function CameraMap(p: MapViewProps) {
       style: (p.offline ? offlineStyle(p.palette.canvas) : p.dark ? STYLE_DARK : STYLE_LIGHT) as never,
       center: [p.center.lon, p.center.lat],
       zoom: p.center.zoom,
-      attributionControl: { compact: false },
+      // Attribution is rendered by Explore as a caption above the sheets (always visible, never behind the tab bar).
+      attributionControl: false,
     });
-    m.addControl(new maplibregl.NavigationControl({ showZoom: true, showCompass: true, visualizePitch: false }), 'top-right');
+    // Compass only, top-left, clear of the recenter/filter buttons; pinch/scroll handles zoom.
+    m.addControl(new maplibregl.NavigationControl({ showZoom: false, showCompass: true, visualizePitch: false }), 'top-left');
     map.current = m;
     const addLayers = () => {
       const c = latest.current.palette;

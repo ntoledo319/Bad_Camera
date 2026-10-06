@@ -20,12 +20,22 @@ import { NotebookError } from '../../data/notebook';
 import { installationTitle, placeLabelOf, fmtDate } from '../../features/format';
 import type { Category, ObservationFeatures } from '../../domain/schemas';
 import { log } from '../../platform/diagnostics';
+import { SourceLinkForm, SourceLinkList } from '../../features/SourceLinks';
 
 const STEPS = ['Photo', 'Features', 'Place', 'Review'] as const;
 const MOUNTS: ObservationFeatures['mounting'][] = ['pole', 'streetlight', 'building', 'gantry', 'trailer', 'vehicle', 'other', 'unknown'];
 const FORMS: ObservationFeatures['form'][] = ['box', 'bullet', 'dome', 'multi_lens', 'sensor', 'unknown'];
 const DIRS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 const label = (s: string) => (s === 'unknown' ? 'Unknown / skip' : s === 'multi_lens' ? 'Multi-lens' : s[0].toUpperCase() + s.slice(1));
+
+function StepNav({ step, onBack, next, nextLabel = 'Next', nextDisabled, busy }: { step: number; onBack: () => void; next?: () => void; nextLabel?: string; nextDisabled?: boolean; busy: boolean }) {
+  return (
+    <View style={{ flexDirection: 'row', gap: SPACE.m }}>
+      {step > 0 && <Button label="Back" kind="secondary" onPress={onBack} style={{ flex: 1 }} />}
+      {next && <Button label={nextLabel} onPress={next} disabled={nextDisabled} busy={busy} style={{ flex: 2 }} />}
+    </View>
+  );
+}
 
 export default function NewObservation() {
   const params = useLocalSearchParams<{ installationId?: string; mode?: string; start?: string }>();
@@ -38,7 +48,27 @@ export default function NewObservation() {
   const [busy, setBusy] = useState(false);
   const [placing, setPlacing] = useState<'equipment' | 'observer' | null>(null);
   const [saved, setSaved] = useState<{ id: string; atts: number } | null>(null);
+  const [resumed, setResumed] = useState(false);
+  const [addingSource, setAddingSource] = useState(false);
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
   const scroller = useRef<ScrollView>(null);
+
+  const freshDraft = (): Draft => {
+    const fresh = emptyDraft();
+    const inst = params.installationId ? s.installation(String(params.installationId)) : null;
+    if (inst) {
+      fresh.installationId = inst.id;
+      fresh.category = inst.category;
+      fresh.categoryReason = 'Linked to an existing mapped record';
+      if (inst.geometry) {
+        fresh.equipment = { lat: inst.geometry.lat, lon: inst.geometry.lon, uncertaintyM: inst.geometry.precisionMeters, method: 'source_map' };
+        fresh.equipmentMode = 'linked';
+      }
+      fresh.placeLabel = placeLabelOf(inst);
+    }
+    if (params.mode === 'nophoto' || params.mode === 'correction') fresh.step = 1;
+    return fresh;
+  };
 
   // Load (or resume) the persisted draft.
   useEffect(() => {
@@ -46,23 +76,12 @@ export default function NewObservation() {
       const existing = await nb.draft<Draft>();
       if (existing && existing.v === 1) {
         setD(existing);
+        setResumed(true);
         setMsg({ kind: 'info', text: `Resumed your unfinished draft from ${fmtDate(existing.startedAt, true)}.` });
         return;
       }
-      const fresh = emptyDraft();
-      const inst = params.installationId ? s.installation(String(params.installationId)) : null;
-      if (inst) {
-        fresh.installationId = inst.id;
-        fresh.category = inst.category;
-        fresh.categoryReason = 'Linked to an existing mapped record';
-        if (inst.geometry) {
-          fresh.equipment = { lat: inst.geometry.lat, lon: inst.geometry.lon, uncertaintyM: inst.geometry.precisionMeters, method: 'source_map' };
-          fresh.equipmentMode = 'linked';
-        }
-        fresh.placeLabel = placeLabelOf(inst);
-      }
-      if (params.mode === 'nophoto') fresh.step = 1;
-      setD(fresh);
+      setD(freshDraft());
+      if (params.mode === 'correction') setMsg({ kind: 'info', text: 'Record what you saw that differs from the public record, and attach any sources on the Review step. The public record itself is not changed; your correction stays private.' });
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nb]);
@@ -81,6 +100,8 @@ export default function NewObservation() {
   useEffect(() => {
     if (!d || autoStarted.current || !params.start || d.photos.length > 0 || d.step !== 0) return;
     autoStarted.current = true;
+    // addPhotos is declared below the early return; it is initialised whenever this effect sees a draft.
+    // eslint-disable-next-line react-hooks/immutability
     (async () => addPhotos(params.start === 'camera' && CAMERA_SUPPORTED ? await takePhoto() : await importPhotos(MAX_PHOTOS)))();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [d]);
@@ -89,9 +110,15 @@ export default function NewObservation() {
   const up = (patch: Partial<Draft>) => setD({ ...d, ...patch });
   const go = (step: Draft['step']) => {
     up({ step });
+    setMsg(null);
     scroller.current?.scrollTo({ y: 0, animated: false });
   };
   const linked = d.installationId ? s.installation(d.installationId) : null;
+  // Bring the map into view so the "tap the map" instruction is actionable.
+  const startPlacing = (what: 'equipment' | 'observer') => {
+    setPlacing(what);
+    scroller.current?.scrollTo({ y: 0, animated: true });
+  };
 
   const addPhotos = async (r: PickResult) => {
     if (r.status === 'canceled') return setMsg({ kind: 'info', text: 'No photo added.' });
@@ -183,17 +210,15 @@ export default function NewObservation() {
     </View>
   );
 
-  const Nav = ({ next, nextLabel = 'Next', nextDisabled }: { next?: () => void; nextLabel?: string; nextDisabled?: boolean }) => (
-    <View style={{ flexDirection: 'row', gap: SPACE.m }}>
-      {d.step > 0 && <Button label="Back" kind="secondary" onPress={() => go((d.step - 1) as Draft['step'])} style={{ flex: 1 }} />}
-      {next && <Button label={nextLabel} onPress={next} disabled={nextDisabled} busy={busy} style={{ flex: 2 }} />}
-    </View>
-  );
 
-  const discard = async () => {
+  const discard = async (startNew: boolean) => {
     await nb.dropDraftPhotos(d.photos.map((p) => p.blobId));
     await nb.clearDraft();
-    router.back();
+    setConfirmDiscard(false);
+    if (!startNew) return router.back();
+    setResumed(false);
+    setMsg(null);
+    setD(freshDraft());
   };
 
   return (
@@ -202,7 +227,15 @@ export default function NewObservation() {
       {s.settings.demoMode && <DemoBanner />}
       {Stepper}
       {msg && (
-        <Banner kind={msg.kind} action={<Button kind="ghost" label="Dismiss" onPress={() => setMsg(null)} />}>
+        <Banner
+          kind={msg.kind}
+          action={
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACE.s }}>
+              {resumed && <Button kind="ghost" label="Start a new draft instead" onPress={() => setConfirmDiscard(true)} />}
+              <Button kind="ghost" label="Dismiss" onPress={() => setMsg(null)} />
+            </View>
+          }
+        >
           {msg.text}
         </Banner>
       )}
@@ -230,7 +263,7 @@ export default function NewObservation() {
               <Button label="Remove photo" kind="ghost" icon={<Trash size={18} color={c.primary} />} onPress={() => removePhoto(i)} />
             </Card>
           ))}
-          <Nav next={() => go(1)} nextLabel={d.photos.length ? 'Next: features' : 'Continue without a photo'} />
+          <StepNav step={d.step} onBack={() => go((d.step - 1) as Draft['step'])} busy={busy} next={() => go(1)} nextLabel={d.photos.length ? 'Next: features' : 'Continue without a photo'} />
         </>
       )}
 
@@ -317,7 +350,7 @@ export default function NewObservation() {
             )}
             {d.identificationLevel !== 'unknown' && !d.selectedFamilyId && <T v="small" color={c.caution}>Choose a family above, or set the level back to Unknown.</T>}
           </Section>
-          <Nav next={() => go(2)} nextDisabled={d.identificationLevel !== 'unknown' && !d.selectedFamilyId} />
+          <StepNav step={d.step} onBack={() => go((d.step - 1) as Draft['step'])} busy={busy} next={() => go(2)} nextDisabled={d.identificationLevel !== 'unknown' && !d.selectedFamilyId} />
         </>
       )}
 
@@ -380,7 +413,7 @@ export default function NewObservation() {
                 else if (v === 'none') up({ equipmentMode: 'none', equipment: null });
                 else {
                   up({ equipmentMode: v, equipment: null });
-                  setPlacing('equipment');
+                  startPlacing('equipment');
                 }
               }}
             />
@@ -390,13 +423,13 @@ export default function NewObservation() {
                 v={`${d.equipment.lat.toFixed(5)}, ${d.equipment.lon.toFixed(5)} · ${({ source_map: 'source map', user_placed: 'user placed', photo_metadata: 'photo metadata', approximate_area: 'approximate area' } as const)[d.equipment.method]}${d.equipment.uncertaintyM != null ? ` · ±${d.equipment.uncertaintyM} m` : ''}`}
               />
             )}
-            {(d.equipmentMode === 'placed' || d.equipmentMode === 'approximate') && <Button label={d.equipment ? 'Move equipment pin' : 'Tap map to place equipment'} kind="secondary" icon={<MapPin size={18} color={c.primary} />} onPress={() => setPlacing('equipment')} />}
+            {(d.equipmentMode === 'placed' || d.equipmentMode === 'approximate') && <Button label={d.equipment ? 'Move equipment pin' : 'Tap map to place equipment'} kind="secondary" icon={<MapPin size={18} color={c.primary} />} onPress={() => startPlacing('equipment')} />}
           </Section>
 
           <Section title="Where you stood (optional)">
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACE.s }}>
               <Button label="Use my current location" kind="secondary" busy={busy} icon={<LocateFixed size={18} color={c.primary} />} onPress={useMyLocationAsObserver} />
-              <Button label="Place on map" kind="secondary" onPress={() => setPlacing('observer')} />
+              <Button label="Place on map" kind="secondary" onPress={() => startPlacing('observer')} />
               {d.photos[0]?.photoMetadata.gps && (
                 <Button label="Use photo metadata" kind="secondary" onPress={() => up({ observer: { lat: d.photos[0].photoMetadata.gps!.lat, lon: d.photos[0].photoMetadata.gps!.lon, horizontalAccuracyM: null, fixTimestamp: exifToIso(d.photos[0].photoMetadata), method: 'photo_metadata' } })} />
               )}
@@ -428,7 +461,7 @@ export default function NewObservation() {
             </View>
           </Section>
           <Field label="Place label (optional)" value={d.placeLabel} onChangeText={(t) => up({ placeLabel: t })} placeholder="e.g. Post Rd near Unquowa Rd" hint="Shown in exports only if you choose to include it." />
-          <Nav next={() => go(3)} nextLabel="Next: review" />
+          <StepNav step={d.step} onBack={() => go((d.step - 1) as Draft['step'])} busy={busy} next={() => go(3)} nextLabel="Next: review" />
         </>
       )}
 
@@ -440,11 +473,12 @@ export default function NewObservation() {
             <KV k="Photos" v={`${d.photos.length} (private originals)`} />
             <KV k="Equipment type" v={CATEGORY_LABEL[d.category]} />
             <KV k="Identification" v={d.identificationLevel === 'unknown' ? 'Unknown' : `${d.identificationLevel === 'exact_model' ? 'Exact model' : 'Possible family'}: ${CATALOG.find((x) => x.id === d.selectedFamilyId)?.familyLabel ?? d.selectedFamilyId}`} />
-            <KV k="Basis" v={d.identificationBasis.replace(/_/g, ' ')} />
+            <KV k="Basis" v={({ unknown: 'Not identified', possible_family_visual_features: 'Visible features only', readable_label_or_documentation: 'Readable label or documentation', linked_public_record: 'Linked public record' } as const)[d.identificationBasis]} />
             <KV k="Linked mapped record" v={linked ? installationTitle(linked) : 'None'} />
-            <KV k="Equipment location" v={d.equipment && d.equipmentMode !== 'none' ? `${d.equipment.lat.toFixed(5)}, ${d.equipment.lon.toFixed(5)} (${d.equipment.method.replace('_', ' ')})` : 'Not recorded'} />
-            <KV k="Photographer position" v={d.observer ? `${d.observer.method.replace('_', ' ')} · private` : 'Not recorded'} />
+            <KV k="Equipment location" v={d.equipment && d.equipmentMode !== 'none' ? `${d.equipment.lat.toFixed(5)}, ${d.equipment.lon.toFixed(5)} (${({ source_map: 'from source map', user_placed: 'placed by you', photo_metadata: 'photo metadata', approximate_area: 'approximate area' } as const)[d.equipment.method]})` : 'Not recorded'} />
+            <KV k="Photographer position" v={d.observer ? `${({ gps_fix: 'Phone location fix', manual_reference: 'Placed by you', photo_metadata: 'Photo metadata' } as const)[d.observer.method]} · private` : 'Not recorded'} />
             <KV k="Place label" v={d.placeLabel || 'None'} />
+            <KV k="Sources" v={`${linked ? 'Linked public record' : 'None from a public record'}${d.userSources?.length ? ` + ${d.userSources.length} you added` : ''}`} />
           </Card>
           <Section title="Observation time">
             <Segmented
@@ -462,12 +496,44 @@ export default function NewObservation() {
               return <T v="small" color={c.text2}>{t.observedAt ? `${fmtDate(t.observedAt, true)} — ${t.basis === 'photo_metadata' ? 'from photo metadata (not verified)' : 'phone clock at capture (not independently attested)'}` : 'Event time not established'}</T>;
             })()}
           </Section>
+          <Section title="Sources you add (optional)">
+            <SourceLinkList sources={d.userSources ?? []} onRemove={(sid) => up({ userSources: (d.userSources ?? []).filter((x) => x.id !== sid) })} />
+            {addingSource ? (
+              <SourceLinkForm
+                onAdd={(src) => {
+                  up({ userSources: [...(d.userSources ?? []), src] });
+                  setAddingSource(false);
+                }}
+                onCancel={() => setAddingSource(false)}
+              />
+            ) : (
+              <Button label="Add a source link" kind="secondary" onPress={() => setAddingSource(true)} />
+            )}
+            <T v="caption" color={c.text2}>
+              {linked ? 'Sources of the linked public record are attached automatically. ' : ''}A link is a pointer, not a verified claim.
+            </T>
+          </Section>
           <Field label="Private notes (optional)" value={d.localNotes} onChangeText={(t) => up({ localNotes: t })} multiline style={{ minHeight: 96 }} hint="Notes stay private. They are never included in public exports." />
           <Banner kind="info" title="Saved privately">This record is saved only on this device. Nothing is submitted or published. You decide later what to share.</Banner>
-          <Nav next={save} nextLabel="Save observation" />
+          <StepNav step={d.step} onBack={() => go((d.step - 1) as Draft['step'])} busy={busy} next={save} nextLabel="Save observation" />
         </>
       )}
-      <Button label="Discard draft" kind="ghost" onPress={discard} />
+      {confirmDiscard ? (
+        <Banner
+          kind="caution"
+          title="Discard this draft?"
+          action={
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACE.s }}>
+              <Button label="Keep draft" kind="secondary" onPress={() => setConfirmDiscard(false)} />
+              <Button label={resumed ? 'Discard and start new' : 'Discard'} kind="danger" onPress={() => discard(resumed)} />
+            </View>
+          }
+        >
+          {`Its ${d.photos.length} photo${d.photos.length === 1 ? '' : 's'} and answers will be removed from this device. Saved observations are not affected.`}
+        </Banner>
+      ) : (
+        <Button label="Discard draft" kind="ghost" onPress={() => setConfirmDiscard(true)} />
+      )}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, opacity: 0.8 }}>
         <ChevronRight size={14} color={c.text2} />
         <T v="caption" color={c.text2}>Your draft is saved automatically and survives closing the app.</T>

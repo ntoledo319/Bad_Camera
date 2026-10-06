@@ -16,3 +16,5 @@ coverage/
 tmp/
 artifacts/private/
 *.log
+/public/maplibre/
+.DS_Store

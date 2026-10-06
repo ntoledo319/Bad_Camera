@@ -2,7 +2,7 @@
  * Observation lifecycle: creation and append-only revisions with a local JCS/SHA-256 hash chain.
  * A local chain can be rewritten by someone controlling the device; it is NOT a trusted timestamp.
  */
-import { Observation, SCHEMA_VERSION, type ObservationFeatures } from './schemas';
+import { Observation, SCHEMA_VERSION, type ObservationFeatures, type Source } from './schemas';
 import { revisionHash, uuidv4 } from './hash';
 import { validateIdentification } from './identify';
 
@@ -27,6 +27,7 @@ export interface ObservationDraft {
   localNotes?: string;
   attachments?: string[];
   sources?: string[];
+  userSources?: Source[];
   claimIds?: string[];
   sourceRecordSnapshot?: unknown;
   isDemo?: boolean;
@@ -68,6 +69,7 @@ export function createObservation(d: ObservationDraft, now = new Date().toISOStr
     localNotes: d.localNotes ?? '',
     attachments: d.attachments ?? [],
     sources: d.sources ?? [],
+    ...(d.userSources?.length ? { userSources: d.userSources } : {}),
     claimIds: d.claimIds ?? [],
     sourceRecordSnapshot: d.sourceRecordSnapshot ?? null,
     collectionIds: [],
@@ -85,7 +87,7 @@ export function createObservation(d: ObservationDraft, now = new Date().toISOStr
 export type ObservationPatch = Partial<
   Pick<
     Observation,
-    'category' | 'selectedFamilyId' | 'identificationBasis' | 'identificationLevel' | 'features' | 'placeLabel' | 'localNotes' | 'equipmentLocation' | 'equipmentLocationUncertainNote' | 'direction' | 'collectionIds' | 'sources' | 'claimIds'
+    'category' | 'selectedFamilyId' | 'identificationBasis' | 'identificationLevel' | 'features' | 'placeLabel' | 'localNotes' | 'equipmentLocation' | 'equipmentLocationUncertainNote' | 'direction' | 'collectionIds' | 'sources' | 'userSources' | 'claimIds'
   >
 > & { appendAttachments?: string[] };
 

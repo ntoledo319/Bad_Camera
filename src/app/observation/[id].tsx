@@ -1,5 +1,5 @@
 /** S12 Record detail: original/redacted selector, timeline, revisions (append-only), genuine delete. */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { Share2, Pencil, Trash, ShieldCheck, ChevronRight, Lock } from 'lucide-react-native';
@@ -11,10 +11,29 @@ import { loadBundle, type RecordBundle, derivativeFor } from '../../features/exp
 import { PhotoView } from '../../features/PhotoView';
 import { CATEGORY_LABEL } from '../../domain/projection';
 import { verifyChain } from '../../domain/observation';
-import { fmtDate, observationTitle, installationTitle } from '../../features/format';
+import { fmtDate, observationTitle, installationTitle, claimDisplay } from '../../features/format';
+import { SourceLinkForm, SourceLinkList } from '../../features/SourceLinks';
 import { roundForDisplay } from '../../domain/distance';
 import { CATALOG_BY_ID } from '../../../content/catalog/catalog';
 import type { Category, Collection } from '../../domain/schemas';
+
+const BASIS_TEXT = {
+  unknown: 'Not identified',
+  possible_family_visual_features: 'Visible features only',
+  readable_label_or_documentation: 'Readable label or documentation',
+  linked_public_record: 'Linked public record',
+} as const;
+
+const capitalizeFirst = (v: string) => v[0].toUpperCase() + v.slice(1);
+
+const METHOD_TEXT: Record<string, string> = {
+  source_map: 'from source map',
+  user_placed: 'placed by you',
+  photo_metadata: 'photo metadata, not verified',
+  approximate_area: 'approximate area',
+  gps_fix: 'phone location fix',
+  manual_reference: 'placed by you',
+};
 
 export default function RecordDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -32,6 +51,7 @@ export default function RecordDetail() {
   const [place, setPlace] = useState('');
   const [category, setCategory] = useState<Category>('unknown');
   const [reason, setReason] = useState('');
+  const [addingSource, setAddingSource] = useState(false);
 
   const load = useCallback(async () => {
     const r = await loadBundle(s, String(id));
@@ -44,14 +64,13 @@ export default function RecordDetail() {
       setCols(await s.notebook.collections());
     }
   }, [id, s]);
+  // Reload on focus and whenever the notebook changes (s.rev is the change signal).
   useFocusEffect(
     useCallback(() => {
       load();
-    }, [load]),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [load, s.rev]),
   );
-  useEffect(() => {
-    load();
-  }, [s.rev, load]);
 
   if (b === undefined) return <Loading label="Opening record…" />;
   if (b === null)
@@ -134,11 +153,11 @@ export default function RecordDetail() {
         <Card>
           <KV k="Equipment type" v={CATEGORY_LABEL[o.category]} />
           <KV k="Identification" v={o.identificationLevel === 'unknown' ? 'Unknown' : `${o.identificationLevel === 'exact_model' ? 'Exact model' : 'Possible family'}: ${CATALOG_BY_ID[o.selectedFamilyId ?? '']?.familyLabel ?? o.selectedFamilyId}`} />
-          <KV k="Basis" v={o.identificationBasis.replace(/_/g, ' ')} />
+          <KV k="Basis" v={BASIS_TEXT[o.identificationBasis]} />
           <KV k="Event time" v={o.observedAt ? `${fmtDate(o.observedAt, true)} (${o.observedAtBasis === 'photo_metadata' ? 'photo metadata, not verified' : 'phone clock at capture'})` : 'Not established'} />
           <KV k="Place label" v={o.placeLabel || 'None'} />
-          <KV k="Equipment location" v={o.equipmentLocation ? `${o.equipmentLocation.lat.toFixed(5)}, ${o.equipmentLocation.lon.toFixed(5)} (${o.equipmentLocation.method.replace('_', ' ')})` : (o.equipmentLocationUncertainNote ?? 'Not recorded')} />
-          <KV k="Photographer position (private)" v={o.observerLocation ? `${o.observerLocation.method.replace('_', ' ')}${o.observerLocation.horizontalAccuracyM != null ? ` ±${Math.round(o.observerLocation.horizontalAccuracyM)} m` : ''}` : 'Not recorded'} />
+          <KV k="Equipment location" v={o.equipmentLocation ? `${o.equipmentLocation.lat.toFixed(5)}, ${o.equipmentLocation.lon.toFixed(5)} (${METHOD_TEXT[o.equipmentLocation.method]})` : (o.equipmentLocationUncertainNote ?? 'Not recorded')} />
+          <KV k="Photographer position (private)" v={o.observerLocation ? `${capitalizeFirst(METHOD_TEXT[o.observerLocation.method])}${o.observerLocation.horizontalAccuracyM != null ? ` ±${Math.round(o.observerLocation.horizontalAccuracyM)} m` : ''}` : 'Not recorded'} />
           <KV k="Distance at save" v={o.distanceSnapshot ? `About ${roundForDisplay(o.distanceSnapshot.meters, s.settings.units).text} · straight-line` : 'Not computed'} />
           <KV k="Direction" v={o.direction?.cardinal ?? 'Unknown'} />
           {inst && <Row title={`Linked record: ${installationTitle(inst)}`} subtitle="Public mapped record (source claims)" onPress={() => router.push({ pathname: '/camera/[id]', params: { id: inst.id } })} right={<ChevronRight size={18} color={c.text2} />} />}
@@ -158,14 +177,29 @@ export default function RecordDetail() {
       {b.claims.length > 0 && (
         <Section title="Source claims (from the linked public record)">
           <Card>
-            {b.claims.slice(0, 8).map((cl) => (
-              <T key={cl.id} v="small">
-                {cl.fieldPath}: {String(cl.value)} — {cl.basis === 'sourceReported' ? 'reported by source' : cl.basis}
-              </T>
-            ))}
+            {b.claims.slice(0, 8).map((cl) => {
+              const dsp = claimDisplay(cl.fieldPath, cl.value);
+              return <KV key={cl.id} k={`${dsp.label} · ${cl.basis === 'sourceReported' ? 'reported by source' : cl.basis}`} v={dsp.value} />;
+            })}
           </Card>
         </Section>
       )}
+      <Section title="Sources you added">
+        <SourceLinkList sources={o.userSources ?? []} />
+        {!(o.userSources ?? []).length && !addingSource && <T v="small" color={c.text2}>None yet. Add a news report, agency document or manufacturer page you relied on.</T>}
+        {addingSource ? (
+          <SourceLinkForm
+            onAdd={async (src) => {
+              await s.notebook.revise(o.id, { userSources: [...(o.userSources ?? []), src] }, `Added source: ${src.title}`);
+              setAddingSource(false);
+              s.bump();
+            }}
+            onCancel={() => setAddingSource(false)}
+          />
+        ) : (
+          <Button label="Add a source link" kind="secondary" onPress={() => setAddingSource(true)} />
+        )}
+      </Section>
 
       {editing ? (
         <Card>

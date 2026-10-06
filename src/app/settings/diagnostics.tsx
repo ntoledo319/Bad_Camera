@@ -18,7 +18,6 @@ export default function Diagnostics() {
     [`Sightline ${Constants.expoConfig?.version ?? ''} · ${s.platform} · storage: ${s.privateNotebook.kv.name}`, ...list.map((e) => `${e.at} ${e.level.toUpperCase()} [${e.area}] ${e.message}`)].join('\n');
   return (
     <Screen scroll>
-      <T v="title">Diagnostics</T>
       <T v="small" style={{ color: c.text2, marginTop: SPACE.xs }}>Kept in memory only, cleared on restart. Coordinates, hashes, file paths and emails are scrubbed. Nothing is sent anywhere.</T>
       <Section title="Environment">
         <Card>

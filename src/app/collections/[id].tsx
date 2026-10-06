@@ -6,6 +6,7 @@ import { useStore } from '../../data/store';
 import { Banner, Button, Empty, Loading, Row, Screen, Section, T } from '../../design/ui';
 import { SPACE } from '../../design/tokens';
 import { CategoryIcon } from '../../features/CategoryIcon';
+import { BatchExport } from '../../features/BatchExport';
 import { fmtDate, observationTitle } from '../../features/format';
 import type { Collection, Observation } from '../../domain/schemas';
 
@@ -39,6 +40,11 @@ export default function CollectionDetail() {
       <Stack.Screen options={{ title: col.name }} />
       <T v="title">{col.name}</T>
       <T v="small" style={{ marginTop: SPACE.xs }}>Created {fmtDate(col.createdAt)} · {items.length} record{items.length === 1 ? '' : 's'}</T>
+      {items.length > 0 && (
+        <Section title="Export this collection">
+          <BatchExport ids={items.map((o) => o.id)} label={`Collection “${col.name}”`} />
+        </Section>
+      )}
       <Section title="Records">
         {items.length === 0 ? (
           <Empty title="Empty collection" body="Open a record and choose this collection under “Collections” to add it." />

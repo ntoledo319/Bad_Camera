@@ -1,6 +1,6 @@
 /** S02 Explore map + S03 list + S05 collapsed detail sheet. */
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, View, useWindowDimensions } from 'react-native';
+import { FlatList, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Search, List, Map as MapIcon, LocateFixed, SlidersHorizontal, X, Bookmark, BookmarkCheck, NotebookPen, Share2, Info, RefreshCw } from 'lucide-react-native';
@@ -55,7 +55,9 @@ export default function Explore() {
     s.notebook.bookmarks().then((b) => setBookmarked(new Set(b.map((x) => x.installationId))));
   }, [s.notebook, s.rev]);
 
-  const filtered = useMemo(() => applyFilters(s.installations, f, Date.now(), s.allClaims), [s.installations, f, s.allClaims]);
+  // Day-granular "now" keeps the age filter stable during a session without calling Date.now() in render.
+  const [today] = useState(() => Date.now());
+  const filtered = useMemo(() => applyFilters(s.installations, f, today, s.allClaims), [s.installations, f, s.allClaims, today]);
   const area = searchBox ?? viewport;
   const inArea = useMemo(() => (area ? filtered.filter((i) => inBbox(i, area)) : filtered), [filtered, area]);
   const listItems = useMemo(() => {
@@ -309,9 +311,9 @@ export default function Explore() {
 
   const listEl = (
     <View style={{ flex: 1 }}>
-      <View style={{ flexDirection: 'row', gap: SPACE.s, paddingHorizontal: gutter, paddingVertical: SPACE.s, flexWrap: 'wrap' }}>
-        <T v="small" color={c.text2} style={{ alignSelf: 'center' }}>
-          Sort:
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0, flexShrink: 0 }} contentContainerStyle={{ flexDirection: 'row', gap: SPACE.s, paddingHorizontal: gutter, paddingVertical: SPACE.s, alignItems: 'center' }}>
+        <T v="small" color={c.text2}>
+          Sort
         </T>
         {(
           [
@@ -323,9 +325,10 @@ export default function Explore() {
         ).map(([k, l]) => (
           <Chip key={k} label={k === 'distance' && !s.reference ? 'Distance (needs a point)' : l} selected={sort === k} onPress={() => (k === 'distance' && !s.reference ? setSearchOpen(true) : setSort(k))} />
         ))}
-      </View>
+      </ScrollView>
       <FlatList
         data={listItems}
+        contentContainerStyle={{ paddingBottom: wide ? SPACE.l : 120 }}
         keyExtractor={(i) => i.id}
         renderItem={renderRow}
         initialNumToRender={20}
@@ -376,6 +379,7 @@ export default function Explore() {
         )}
       </View>
       <FiltersSheet
+        key={filtersOpen ? 'filters-open' : 'filters-closed'}
         visible={filtersOpen}
         value={f}
         manufacturersPresent={manufacturersPresent}

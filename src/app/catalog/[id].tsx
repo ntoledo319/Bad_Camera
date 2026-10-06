@@ -8,6 +8,7 @@ import { Banner, Button, Card, Empty, Pill, Row, Screen, Section, T } from '../.
 import { SPACE } from '../../design/tokens';
 import { CATALOG_BY_ID } from '../../../content/catalog/catalog';
 import { SOURCE_BY_ID } from '../../../content/sources';
+import { capitalize } from '../../features/format';
 import { CATEGORY_LABEL } from '../../domain/projection';
 import { SchematicView } from '../../features/SchematicView';
 
@@ -38,7 +39,7 @@ export default function CatalogEntryScreen() {
     );
   return (
     <Screen scroll>
-      <Stack.Screen options={{ title: e.familyLabel }} />
+      <Stack.Screen options={{ title: 'Equipment guide' }} />
       <View style={{ flexDirection: 'row', gap: SPACE.l, alignItems: 'center' }}>
         <SchematicView name={e.schematic} size={112} label={`Illustrative line drawing for ${e.familyLabel}. Not a photo of a real device.`} />
         <View style={{ flex: 1, gap: SPACE.xs }}>
@@ -47,7 +48,7 @@ export default function CatalogEntryScreen() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACE.xs }}>
             <Pill label={CATEGORY_LABEL[e.category]} tone="primary" />
             {e.deploymentModes.map((m) => (
-              <Pill key={m} label={m.replace('_', ' ')} />
+              <Pill key={m} label={capitalize(m.replace(/_/g, ' '))} />
             ))}
           </View>
         </View>

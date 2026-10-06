@@ -43,7 +43,10 @@ export class MemoryKv implements KvBackend {
       throw new Error('simulated commit failure');
     }
     const next = new Map(this.map);
-    for (const o of ops) o.type === 'put' ? next.set(o.key, o.value!) : next.delete(o.key);
+    for (const o of ops) {
+      if (o.type === 'put') next.set(o.key, o.value!);
+      else next.delete(o.key);
+    }
     this.map = next;
   }
   async putBlob(id: string, b: Uint8Array) {

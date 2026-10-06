@@ -2,13 +2,16 @@
 import React, { useEffect, useState } from 'react';
 import { Linking, Platform, View } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { Bookmark, BookmarkCheck, NotebookPen, ExternalLink, ChevronRight, Navigation } from 'lucide-react-native';
+import { Bookmark, BookmarkCheck, NotebookPen, ExternalLink, ChevronRight, Navigation, Share2, FilePlus2 } from 'lucide-react-native';
 import { useStore } from '../../data/store';
 import { useTheme } from '../../design/theme';
 import { Banner, Button, Card, DemoBanner, Empty, KV, Pill, Row, Screen, Section, T } from '../../design/ui';
 import { SPACE } from '../../design/tokens';
 import { CategoryIcon } from '../../features/CategoryIcon';
-import { claimValue, distanceFor, fmtDate, installationTitle, manufacturerName, NOT_ESTABLISHED, observationTitle, observedLabel, placeLabelOf, sourceBadge, sourceEditLabel } from '../../features/format';
+import { capitalize, claimDisplay, claimValue, directionLabel, distanceFor, fmtDate, installationTitle, LIFECYCLE_LABEL, manufacturerName, NOT_ESTABLISHED, observationTitle, observedLabel, placeLabelOf, sourceBadge, sourceEditLabel } from '../../features/format';
+import { CATEGORY_LABEL } from '../../domain/projection';
+import { shareBytes, copyText } from '../../platform/files';
+import { utf8ToBytes } from '../../domain/hash';
 import { CATALOG_BY_ID, MANUFACTURER_TO_FAMILIES } from '../../../content/catalog/catalog';
 import { roundForDisplay, cardinal, bearingDegrees } from '../../domain/distance';
 import type { Observation } from '../../domain/schemas';
@@ -23,6 +26,7 @@ export default function CameraDetail() {
   const [local, setLocal] = useState<Observation[]>([]);
   const [showDist, setShowDist] = useState(false);
   const [confirmMaps, setConfirmMaps] = useState(false);
+  const [shareMsg, setShareMsg] = useState<string | null>(null);
 
   useEffect(() => {
     if (!inst) return;
@@ -48,11 +52,26 @@ export default function CameraDetail() {
   const d = distanceFor(inst, s.reference, s.settings.units);
   const sourceIds = [...new Set(claims.map((x) => x.sourceId))];
 
+  const shareSummary = async () => {
+    const src = geomSource;
+    const text = [
+      `${installationTitle(inst)} — ${placeLabelOf(inst)}`,
+      `Source status: ${sourceBadge(inst, claims)}. ${observedLabel(inst)}.`,
+      src ? `Source: ${src.title} (${src.publisher})${src.url ? ` ${src.url}` : ''}` : null,
+      'A map record is a report, not proof that a camera is operating or recorded anyone.',
+    ]
+      .filter(Boolean)
+      .join('\n');
+    const r = await shareBytes(`sightline-${inst.id}.txt`, utf8ToBytes(text), 'text/plain', 'Share mapped record');
+    if (r.status === 'Sharing unavailable') setShareMsg((await copyText(text)) ? 'Sharing is unavailable here, so the summary was copied to your clipboard.' : r.detail);
+    else setShareMsg(r.status);
+  };
+
   const claimNote = (cl?: { basis: string; status: string }) => (cl ? `${cl.basis === 'sourceReported' ? 'Reported by source' : cl.basis === 'directlyObserved' ? 'Directly observed' : 'Inferred'} · ${cl.status}` : undefined);
 
   return (
     <Screen>
-      <Stack.Screen options={{ title: installationTitle(inst) }} />
+      <Stack.Screen options={{ title: 'Mapped record' }} />
       {inst.isDemo && <DemoBanner />}
       <View style={{ flexDirection: 'row', gap: SPACE.m, alignItems: 'center' }}>
         <CategoryIcon category={inst.category} size={52} />
@@ -111,14 +130,28 @@ export default function CameraDetail() {
         />
         <Button label="Record observation" icon={<NotebookPen size={18} color={c.onPrimary} />} onPress={() => router.push({ pathname: '/observation/new', params: { installationId: inst.id } })} style={{ flexGrow: 1 }} />
       </View>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACE.s }}>
+        <Button label="Share summary" kind="ghost" icon={<Share2 size={18} color={c.primary} />} onPress={shareSummary} />
+        <Button
+          label="Add source or correction"
+          kind="ghost"
+          icon={<FilePlus2 size={18} color={c.primary} />}
+          onPress={() => router.push({ pathname: '/observation/new', params: { installationId: inst.id, mode: 'correction' } })}
+        />
+      </View>
+      {shareMsg && (
+        <Banner kind="info" action={<Button kind="ghost" label="Dismiss" onPress={() => setShareMsg(null)} />}>
+          {shareMsg}
+        </Banner>
+      )}
 
       <Section title="Hardware">
         <Card>
-          <KV k="Equipment type" v={inst.category === 'unknown' ? NOT_ESTABLISHED : installationTitle(inst).split(' · ')[0]} />
+          <KV k="Equipment type" v={inst.category === 'unknown' ? NOT_ESTABLISHED : CATEGORY_LABEL[inst.category]} />
           <KV k="Manufacturer (as reported)" v={mfr ?? NOT_ESTABLISHED} />
           <KV k="Model" v={inst.modelId ?? NOT_ESTABLISHED} />
-          <KV k="Mounting" v={(mount?.value as string) ?? NOT_ESTABLISHED} />
-          <KV k="Deployment" v={inst.deploymentMode === 'unknown' ? NOT_ESTABLISHED : inst.deploymentMode} />
+          <KV k="Mounting" v={mount ? claimDisplay('hardware.mount', mount.value).value : NOT_ESTABLISHED} />
+          <KV k="Deployment" v={inst.deploymentMode === 'unknown' ? NOT_ESTABLISHED : capitalize(inst.deploymentMode.replace(/_/g, ' '))} />
           {mfr && <T v="caption" color={c.text2}>{claimNote(claimValue(claims, 'hardware.manufacturer'))}. A manufacturer is not the operator.</T>}
           {families.map((f) =>
             CATALOG_BY_ID[f] ? <Row key={f} title={`Guide: ${CATALOG_BY_ID[f].familyLabel}`} subtitle="What it does, visible cues, lookalikes" onPress={() => router.push({ pathname: '/catalog/[id]', params: { id: f } })} right={<ChevronRight size={18} color={c.text2} />} /> : null,
@@ -130,8 +163,8 @@ export default function CameraDetail() {
           <KV k="Mapped coordinates" v={inst.geometry ? `${inst.geometry.lat.toFixed(5)}, ${inst.geometry.lon.toFixed(5)}` : NOT_ESTABLISHED} />
           <KV k="Coordinate method" v={inst.geometry ? ({ source_map: 'Source map point', user_placed: 'User placed', photo_metadata: 'Photo metadata', relation_centroid: 'Approximate (centre of a mapped area)', unknown: NOT_ESTABLISHED } as const)[inst.geometry.method] : NOT_ESTABLISHED} />
           <KV k="Coordinate precision" v={inst.geometry?.precisionMeters != null ? `±${inst.geometry.precisionMeters} m` : NOT_ESTABLISHED} />
-          <KV k="Facing direction" v={direction ? `${direction.value} (reported${Number.isFinite(Number(direction.value)) ? `, ${cardinal(Number(direction.value))}` : ''})` : NOT_ESTABLISHED} />
-          <KV k="Last in-person check" v={check ? String(check.value) : 'Observation date unknown'} />
+          <KV k="Facing direction" v={direction ? `${directionLabel(String(direction.value))} · as reported` : NOT_ESTABLISHED} />
+          <KV k="Last in-person check" v={check ? fmtDate(String(check.value)) : 'Observation date unknown'} />
           <KV k="Map record last edited" v={fmtDate(inst.sourceModifiedAt)} />
           {inst.geometry && (
             <Button label="Open in system maps" kind="ghost" icon={<Navigation size={18} color={c.primary} />} onPress={() => setConfirmMaps(true)} />
@@ -197,7 +230,7 @@ export default function CameraDetail() {
           {claims.map((cl) => (
             <View key={cl.id} style={{ gap: 2, paddingVertical: 4 }}>
               <T v="small" style={{ fontWeight: '600' }}>
-                {cl.fieldPath}: {String(cl.value)}
+                {`${claimDisplay(cl.fieldPath, cl.value).label}: ${claimDisplay(cl.fieldPath, cl.value).value}`}
               </T>
               <T v="caption" color={c.text2}>
                 {claimNote(cl)} · {s.source(cl.sourceId)?.publisher ?? cl.sourceId}
@@ -213,7 +246,7 @@ export default function CameraDetail() {
           <KV k="Last in-person observation" v={inst.lastObservedAt ? fmtDate(inst.lastObservedAt) : 'Observation date unknown'} />
           <KV k="Map record edited" v={fmtDate(inst.sourceModifiedAt)} />
           <KV k="Fetched into Sightline" v={fmtDate(inst.fetchedAt, true)} />
-          <KV k="Lifecycle" v={inst.lifecycle} />
+          <KV k="Lifecycle" v={LIFECYCLE_LABEL[inst.lifecycle]} />
         </Card>
       </Section>
 

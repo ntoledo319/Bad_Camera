@@ -63,7 +63,7 @@ export default function ShareStudio() {
 
   // Approved derivative of the first reviewed photo for card previews.
   useEffect(() => {
-    if (!b || !approved.length) return setPhotoUri(null);
+    if (!b || !approved.length) return;
     let alive = true;
     derivativeFor(s, approved[0])
       .then((d) => alive && setPhotoUri({ uri: `data:image/jpeg;base64,${bytesToBase64(d.bytes)}`, aspect: d.width / d.height }))
@@ -78,7 +78,7 @@ export default function ShareStudio() {
   const isCard = fmt !== 'report' && fmt !== 'evidence';
   const card = useMemo(() => {
     if (!projection || !isCard) return null;
-    const usePhoto = ch.includePhoto && photoUri;
+    const usePhoto = ch.includePhoto && approved.length > 0 && photoUri;
     return renderCard({
       projection,
       preset: fmt as CardPreset,
@@ -86,7 +86,7 @@ export default function ShareStudio() {
       photoAspect: usePhoto ? photoUri.aspect : undefined,
       schematicSvg: schematicFor(b?.observation.selectedFamilyId ? CATALOG_BY_ID[b.observation.selectedFamilyId]?.schematic : null),
     });
-  }, [projection, fmt, ch.includePhoto, photoUri, isCard, b]);
+  }, [projection, fmt, ch.includePhoto, photoUri, isCard, b, approved.length]);
 
   const set = (patch: Partial<DisclosureChoices>) => setCh({ ...ch, ...patch });
 

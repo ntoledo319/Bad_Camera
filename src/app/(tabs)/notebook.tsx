@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Plus, FileCheck2, Trash, Search, Folder } from 'lucide-react-native';
+import { BatchExport } from '../../features/BatchExport';
 import { useStore } from '../../data/store';
 import { useTheme } from '../../design/theme';
 import { Banner, Button, Card, Chip, DemoBanner, Empty, Field, Loading, Pill, Row, Screen, Section, Segmented, T } from '../../design/ui';
@@ -41,9 +42,11 @@ export default function NotebookTab() {
       setObs([]);
     }
   }, [s.notebook]);
+  // Reload on focus and whenever the notebook changes (s.rev is the change signal).
   useFocusEffect(
     useCallback(() => {
       load();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [load, s.rev]),
   );
 
@@ -97,7 +100,6 @@ export default function NotebookTab() {
   return (
     <Screen scroll>
       {s.settings.demoMode ? <DemoBanner /> : null}
-      <T v="title">Notebook</T>
       <T v="small" style={{ color: c.text2, marginTop: SPACE.xs }}>
         {s.settings.demoMode ? 'Demo notebook — separate from your real records.' : 'Private to this device. Nothing here is uploaded.'}
       </T>
@@ -167,6 +169,11 @@ export default function NotebookTab() {
                 <Button kind="secondary" label="Select all shown" onPress={() => setSel(new Set(filtered.map((o) => o.id)))} />
                 <Button kind="danger" label="Delete selected" icon={<Trash size={18} color={c.error} />} disabled={!sel.size} onPress={() => setConfirm(true)} />
               </View>
+              {sel.size ? (
+                <View style={{ marginTop: SPACE.m }}>
+                  <BatchExport ids={[...sel]} label={`${sel.size} selected record${sel.size === 1 ? '' : 's'}`} />
+                </View>
+              ) : null}
               {confirm ? (
                 <View style={{ marginTop: SPACE.m }}>
                   <Banner kind="error" title={`Delete ${sel.size} record${sel.size === 1 ? '' : 's'}?`}>

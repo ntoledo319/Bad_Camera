@@ -44,7 +44,10 @@ export class IdbKv implements KvBackend {
     if (!ops.length) return;
     const t = this.tx(['kv'], 'readwrite');
     const s = t.objectStore('kv');
-    for (const o of ops) o.type === 'put' ? s.put(o.value, o.key) : s.delete(o.key);
+    for (const o of ops) {
+      if (o.type === 'put') s.put(o.value, o.key);
+      else s.delete(o.key);
+    }
     await new Promise<void>((res, rej) => {
       t.oncomplete = () => res();
       t.onerror = () => rej(t.error);

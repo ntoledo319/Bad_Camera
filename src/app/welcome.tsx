@@ -13,7 +13,8 @@ import { SPACE } from '../design/tokens';
 
 function Illustration({ color, soft }: { color: string; soft: string }) {
   return (
-    <Svg width="100%" height={150} viewBox="0 0 320 150" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+    <View aria-hidden>
+    <Svg width="100%" height={150} viewBox="0 0 320 150">
       <Path d="M10 130 C80 110 120 140 180 118 S280 100 310 112" stroke={soft} strokeWidth={10} fill="none" strokeLinecap="round" />
       <Path d="M70 128V46" stroke={color} strokeWidth={3} strokeLinecap="round" />
       <Path d="M70 54h26v14H74" stroke={color} strokeWidth={3} fill="none" strokeLinejoin="round" />
@@ -23,6 +24,7 @@ function Illustration({ color, soft }: { color: string; soft: string }) {
       <Path d="M150 40h44v52h-44z" stroke={color} strokeWidth={3} fill="none" strokeLinejoin="round" />
       <Path d="M158 54h28M158 64h28M158 74h18" stroke={color} strokeWidth={2.5} strokeLinecap="round" />
     </Svg>
+    </View>
   );
 }
 

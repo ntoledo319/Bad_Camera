@@ -1,5 +1,5 @@
 /** Observation draft model (persisted via Notebook.saveDraft so it survives interruption and restart). */
-import type { Category, EquipmentLocation, ObservationFeatures, ObserverLocation, Observation } from '../../domain/schemas';
+import type { Category, EquipmentLocation, ObservationFeatures, ObserverLocation, Observation, Source } from '../../domain/schemas';
 import type { PhotoMetadata } from '../../domain/exif';
 import { haversineMeters, ALGORITHM } from '../../domain/distance';
 import type { ObservationDraft } from '../../domain/observation';
@@ -36,6 +36,8 @@ export interface Draft {
   localNotes: string;
   timeChoice: 'capture' | 'photo_metadata' | 'unknown';
   startedAt: string;
+  /** Links the user attached (absent in drafts saved by older builds). */
+  userSources?: Source[];
 }
 
 export const MAX_PHOTOS = 12;
@@ -118,6 +120,7 @@ export function toObservationDraft(d: Draft, sourceIds: string[], claimIds: stri
     placeLabel: d.placeLabel.trim(),
     localNotes: d.localNotes,
     sources: sourceIds,
+    userSources: d.userSources ?? [],
     claimIds,
     sourceRecordSnapshot: snapshot,
     isDemo,

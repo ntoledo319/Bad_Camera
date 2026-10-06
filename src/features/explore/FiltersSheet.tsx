@@ -23,10 +23,8 @@ function toggle<T>(arr: T[], v: T): T[] {
 export function FiltersSheet({ visible, value, manufacturersPresent, onClose, onApply }: { visible: boolean; value: FilterState; manufacturersPresent: string[]; onClose: () => void; onApply: (f: FilterState) => void }) {
   const { c, gutter } = useTheme();
   const insets = useSafeAreaInsets();
+  // Explore remounts this sheet each time it opens (see its key), so local edits start from the saved filters.
   const [f, setF] = useState<FilterState>(value);
-  React.useEffect(() => {
-    if (visible) setF(value);
-  }, [visible, value]);
   const reset: FilterState = { categories: [], manufacturers: [], deployment: [], sourceStatus: [], maxObservationAgeDays: null, includeRemoved: false };
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>

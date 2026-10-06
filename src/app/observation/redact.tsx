@@ -3,7 +3,7 @@
  * is never modified. The preview is the actual rasterized public derivative (masks burned in,
  * metadata stripped) so what you review is exactly what exports.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useLayoutEffect } from 'react';
 import { Image, PanResponder, View, type LayoutChangeEvent } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { Undo2, Redo2, RotateCw, Crop, Square, Circle, Eye, Check, RefreshCw } from 'lucide-react-native';
@@ -60,15 +60,15 @@ export default function Redact() {
   };
 
   // Base view: rotation + crop applied (masks drawn on top as overlays while editing).
-  const base = useMemo(() => {
-    if (!orig) return null;
+  const baseResult = useMemo(() => {
+    if (!orig) return { view: null, error: null };
     try {
-      return renderPublicDerivative(orig, t.filter((x) => x.type !== 'mask'), 80);
+      return { view: renderPublicDerivative(orig, t.filter((x) => x.type !== 'mask'), 80), error: null };
     } catch (e) {
-      setErr(`Could not decode this photo: ${(e as Error).message}`);
-      return null;
+      return { view: null, error: `Could not decode this photo: ${(e as Error).message}` };
     }
   }, [orig, t]);
+  const base = baseResult.view;
   const final = useMemo(() => {
     if (!orig || mode !== 'review') return null;
     return renderPublicDerivative(orig, t);
@@ -76,17 +76,22 @@ export default function Redact() {
 
   const aspect = base ? base.width / base.height : 4 / 3;
   const start = useRef<{ x: number; y: number } | null>(null);
+  // The PanResponder is created once; these refs give its handlers the latest values.
   const toolRef = useRef(tool);
-  toolRef.current = tool;
   const frameRef = useRef(frame);
-  frameRef.current = frame;
   const tRef = useRef(t);
-  tRef.current = t;
   const pushRef = useRef(push);
-  pushRef.current = push;
+  useLayoutEffect(() => {
+    toolRef.current = tool;
+    frameRef.current = frame;
+    tRef.current = t;
+    pushRef.current = push;
+  });
 
+  // PanResponder handlers run on gestures, not during render, so reading refs inside them is safe.
   const pan = useMemo(
     () =>
+      // eslint-disable-next-line react-hooks/refs
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
@@ -126,10 +131,11 @@ export default function Redact() {
     [],
   );
 
-  if (err)
+  const shownErr = err ?? baseResult.error;
+  if (shownErr)
     return (
       <Screen>
-        <Banner kind="error">{err}</Banner>
+        <Banner kind="error">{shownErr}</Banner>
         <Button label="Back" onPress={() => router.back()} />
       </Screen>
     );
@@ -206,7 +212,7 @@ export default function Redact() {
             <Pill label={`Rotation ${rot}°`} />
             <Pill label={t.some((x) => x.type === 'crop') ? 'Cropped' : 'Not cropped'} />
             {/* icons only for visual consistency */}
-            <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }} accessibilityElementsHidden>
+            <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }} aria-hidden>
               <Square size={14} color={c.text2} />
               <Circle size={14} color={c.text2} />
               <Crop size={14} color={c.text2} />

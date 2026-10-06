@@ -2,7 +2,7 @@
  * Small centralized app state. Owns: private notebook (or separate demo notebook),
  * public camera data, settings, and the user's chosen reference point / location fix.
  */
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { AppState } from 'react-native';
 import { Notebook } from './notebook';
 import { PublicData } from './publicData';
@@ -43,9 +43,9 @@ export interface AppStore {
 const Ctx = createContext<AppStore | null>(null);
 
 export function AppStoreProvider({ children }: { children: React.ReactNode }) {
-  const privateNb = useRef(new Notebook(createKv('private'))).current;
-  const demoNb = useRef(new Notebook(createKv('demo'))).current;
-  const pub = useRef(new PublicData(createKv('private'))).current;
+  const [privateNb] = useState(() => new Notebook(createKv('private')));
+  const [demoNb] = useState(() => new Notebook(createKv('demo')));
+  const [pub] = useState(() => new PublicData(createKv('private')));
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [settings, setSettings] = useState<Settings>(defaultSettings());

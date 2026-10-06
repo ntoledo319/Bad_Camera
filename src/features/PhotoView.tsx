@@ -6,21 +6,20 @@ import { useTheme } from '../design/theme';
 import { T } from '../design/ui';
 
 export function useDataUri(load: () => Promise<Uint8Array | null>, deps: unknown[]): { uri: string | null; error: string | null } {
-  const [uri, setUri] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // Results are tagged with the deps they were loaded for, so stale bytes never show for new deps.
+  const key = JSON.stringify(deps);
+  const [state, setState] = useState<{ key: string; uri: string | null; error: string | null }>({ key: '', uri: null, error: null });
   useEffect(() => {
     let alive = true;
-    setUri(null);
-    setError(null);
     load()
-      .then((b) => alive && (b ? setUri(`data:image/jpeg;base64,${bytesToBase64(b)}`) : setError('Photo bytes missing')))
-      .catch((e) => alive && setError((e as Error).message));
+      .then((b) => alive && setState({ key, uri: b ? `data:image/jpeg;base64,${bytesToBase64(b)}` : null, error: b ? null : 'Photo bytes missing' }))
+      .catch((e) => alive && setState({ key, uri: null, error: (e as Error).message }));
     return () => {
       alive = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
-  return { uri, error };
+  }, [key]);
+  return state.key === key ? { uri: state.uri, error: state.error } : { uri: null, error: null };
 }
 
 export function PhotoView({ load, deps, style, label, aspect = 4 / 3 }: { load: () => Promise<Uint8Array | null>; deps: unknown[]; style?: StyleProp<ImageStyle>; label: string; aspect?: number }) {

@@ -2,7 +2,15 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "content/**/*.ts", "tools/**/*.ts", "tests/**/*.ts", ".expo/types/**/*.ts", "expo-env.d.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "content/**/*.ts",
+    "tools/**/*.ts",
+    "tests/**/*.ts"
+  ]
 }

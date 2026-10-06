@@ -233,7 +233,7 @@ export function Row({ title, subtitle, onPress, right, left, accessibilityHint }
         <T v="body" style={{ fontWeight: '600' }}>{title}</T>
         {subtitle ? <T v="small" color={c.text2}>{subtitle}</T> : null}
       </View>
-      {right ?? (onPress ? <T v="heading" color={c.text2} accessibilityElementsHidden>›</T> : null)}
+      {right ?? (onPress ? <T v="heading" color={c.text2} aria-hidden>›</T> : null)}
     </>
   );
   const style = { minHeight: 56, flexDirection: 'row' as const, alignItems: 'center' as const, gap: SPACE.m, paddingVertical: SPACE.s };

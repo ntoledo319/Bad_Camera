@@ -31,7 +31,6 @@ export default function RecordsRequest() {
 
   return (
     <Screen scroll>
-      <T v="title">Public-records request</T>
       <T v="small" style={{ color: c.text2, marginTop: SPACE.xs }}>Build a draft here, then send it yourself by email, portal or mail. Sightline never sends anything.</T>
       <Section title="Details">
         <Card>
@@ -61,7 +60,7 @@ export default function RecordsRequest() {
       </Section>
       {out.missing.length ? (
         <Banner kind="caution" title="Still to fill in">
-          {out.missing.join(', ')} — shown as [brackets] in the draft.
+          {`${out.missing.join(', ')} — shown as [brackets] in the draft.`}
         </Banner>
       ) : null}
       <Section title="Draft">
