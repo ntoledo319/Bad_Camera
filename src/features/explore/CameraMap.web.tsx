@@ -33,7 +33,7 @@ export function CameraMap(p: MapViewProps) {
     const addLayers = () => {
       const c = latest.current.palette;
       if (m.getSource('installations')) return;
-      m.addSource('installations', { type: 'geojson', data: toGeoJSON(latest.current.installations, latest.current.selectedId) as never, cluster: true, clusterRadius: 44, clusterMaxZoom: 14 });
+      m.addSource('installations', { type: 'geojson', data: toGeoJSON(latest.current.installations, latest.current.selectedId) as never, cluster: !latest.current.offline, clusterRadius: 44, clusterMaxZoom: 14 });
       m.addSource('marks', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       m.addLayer({ id: 'clusters', type: 'circle', source: 'installations', filter: ['has', 'point_count'], paint: { 'circle-color': c.surface, 'circle-stroke-color': c.primary, 'circle-stroke-width': 2, 'circle-radius': ['step', ['get', 'point_count'], 16, 10, 20, 50, 26] } });
       const glyphs = !!(m.getStyle() as { glyphs?: string }).glyphs;

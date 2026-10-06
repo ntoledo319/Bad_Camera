@@ -1,6 +1,6 @@
 /** Place search (bundled offline index) + manual coordinate entry. No remote geocoding by default. */
 import React, { useState } from 'react';
-import { Modal, View } from 'react-native';
+import { Modal, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { searchPlaces, PLACES, type Place } from '../../../content/places/places';
 import { isValidCoord } from '../../domain/distance';
@@ -23,9 +23,14 @@ export function PlaceSearch({ visible, onClose, onPlace, onCoords }: { visible: 
   const [asRef, setAsRef] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const results = q ? searchPlaces(q) : PLACES.slice(0, 6);
+  const submitCoords = () => {
+    const p = parseCoords(coord);
+    if (!p) return setErr('Enter latitude and longitude in decimal degrees, e.g. 41.1412, -73.2637');
+    onCoords(p, asRef);
+  };
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: c.canvas, paddingTop: insets.top + SPACE.l, paddingHorizontal: gutter, gap: SPACE.l }}>
+      <ScrollView style={{ flex: 1, backgroundColor: c.canvas }} contentContainerStyle={{ paddingTop: insets.top + SPACE.l, paddingBottom: insets.bottom + SPACE.xxl, paddingHorizontal: gutter, gap: SPACE.l }} keyboardShouldPersistTaps="handled">
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <T v="title">Find a place</T>
           <Button label="Close" kind="ghost" onPress={onClose} />
@@ -47,21 +52,19 @@ export function PlaceSearch({ visible, onClose, onPlace, onCoords }: { visible: 
               setErr(null);
             }}
             keyboardType="numbers-and-punctuation"
+            returnKeyType="go"
+            onSubmitEditing={submitCoords}
             error={err}
           />
           <Toggle label="Use as my reference point for distances" hint="Distances will read “from chosen point”." value={asRef} onChange={setAsRef} />
           <Button
             label="Go to coordinates"
             kind="secondary"
-            onPress={() => {
-              const p = parseCoords(coord);
-              if (!p) return setErr('Enter latitude and longitude in decimal degrees, e.g. 41.1412, -73.2637');
-              onCoords(p, asRef);
-            }}
+            onPress={submitCoords}
           />
         </Section>
         <Banner kind="info">Place coordinates are approximate area centres for navigation only.</Banner>
-      </View>
+      </ScrollView>
     </Modal>
   );
 }

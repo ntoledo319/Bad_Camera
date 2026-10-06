@@ -28,11 +28,11 @@ const FORMS: ObservationFeatures['form'][] = ['box', 'bullet', 'dome', 'multi_le
 const DIRS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
 const label = (s: string) => (s === 'unknown' ? 'Unknown / skip' : s === 'multi_lens' ? 'Multi-lens' : s[0].toUpperCase() + s.slice(1));
 
-function StepNav({ step, onBack, next, nextLabel = 'Next', nextDisabled, busy }: { step: number; onBack: () => void; next?: () => void; nextLabel?: string; nextDisabled?: boolean; busy: boolean }) {
+function StepNav({ step, onBack, next, nextLabel = 'Next', nextDisabled, busy, nextKind = 'primary' }: { step: number; onBack: () => void; next?: () => void; nextLabel?: string; nextDisabled?: boolean; busy: boolean; nextKind?: 'primary' | 'secondary' }) {
   return (
     <View style={{ flexDirection: 'row', gap: SPACE.m }}>
       {step > 0 && <Button label="Back" kind="secondary" onPress={onBack} style={{ flex: 1 }} />}
-      {next && <Button label={nextLabel} onPress={next} disabled={nextDisabled} busy={busy} style={{ flex: 2 }} />}
+      {next && <Button label={nextLabel} kind={nextKind} onPress={next} disabled={nextDisabled} busy={busy} style={{ flex: 2 }} />}
     </View>
   );
 }
@@ -263,7 +263,7 @@ export default function NewObservation() {
               <Button label="Remove photo" kind="ghost" icon={<Trash size={18} color={c.primary} />} onPress={() => removePhoto(i)} />
             </Card>
           ))}
-          <StepNav step={d.step} onBack={() => go((d.step - 1) as Draft['step'])} busy={busy} next={() => go(1)} nextLabel={d.photos.length ? 'Next: features' : 'Continue without a photo'} />
+          <StepNav step={d.step} onBack={() => go((d.step - 1) as Draft['step'])} busy={busy} next={() => go(1)} nextLabel={d.photos.length ? 'Next: features' : 'Continue without a photo'} nextKind={d.photos.length ? 'primary' : 'secondary'} />
         </>
       )}
 

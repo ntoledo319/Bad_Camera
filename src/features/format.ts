@@ -33,7 +33,7 @@ export function installationTitle(i: CameraInstallation): string {
   return m ? `${cat} · ${m}` : cat;
 }
 
-/** Nearest bundled place within 2.5 km, for a human label. Navigation aid only, never evidence. */
+/** Nearest bundled neighbourhood within 2.5 km (else town within 15 km), for a human label. Navigation aid only, never evidence. */
 export function nearestPlaceName(lat: number, lon: number): string | null {
   let best: { name: string; d: number } | null = null;
   for (const p of PLACES) {
@@ -41,7 +41,15 @@ export function nearestPlaceName(lat: number, lon: number): string | null {
     const d = haversineMeters({ lat, lon }, p);
     if (d <= 2500 && (!best || d < best.d)) best = { name: `${p.name}, ${p.context.replace(/, CT$/, '')}`, d };
   }
-  return best?.name ?? null;
+  if (best) return best.name;
+  // Otherwise the nearest town or city within 15 km ("Near New Haven, Connecticut").
+  let city: { name: string; d: number } | null = null;
+  for (const p of PLACES) {
+    if (p.zoom >= 14) continue;
+    const d = haversineMeters({ lat, lon }, p);
+    if (d <= 15_000 && (!city || d < city.d)) city = { name: `${p.name}, ${p.context}`, d };
+  }
+  return city?.name ?? null;
 }
 
 export function placeLabelOf(i: CameraInstallation): string {
@@ -51,6 +59,25 @@ export function placeLabelOf(i: CameraInstallation): string {
   if (!i.geometry) return 'No mapped coordinates';
   const place = nearestPlaceName(i.geometry.lat, i.geometry.lon);
   return place ? `Near ${place}` : `Near ${i.geometry.lat.toFixed(4)}, ${i.geometry.lon.toFixed(4)}`;
+}
+
+/** Name for a downloaded area ("New Haven, Connecticut area"): nearest bundled place within 30 km, else rounded coordinates. */
+export function areaName(lat: number, lon: number): string {
+  let best: { name: string; d: number } | null = null;
+  for (const p of PLACES) {
+    const d = haversineMeters({ lat, lon }, p);
+    if (d <= 30_000 && (!best || d < best.d)) best = { name: p.context.includes(',') ? `${p.name}, ${p.context.split(', ').pop()}` : `${p.name}, ${p.context}`, d };
+  }
+  return best ? `${best.name} area` : `Area near ${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+}
+
+/** Compact distance for list rows; keeps the one qualifier that changes how to read it. */
+export function distanceRowText(d: { primary: string; qualifiers: string[]; freshness: string }): string {
+  const base = d.primary.replace(' · straight-line', '');
+  if (d.freshness === 'last_location') return `${base} (not live)`;
+  if (d.freshness === 'old') return `${base} (location fix is old)`;
+  if (d.qualifiers.some((q) => q.startsWith('Approximate location'))) return `${base} (approximate)`;
+  return base;
 }
 
 export const LIFECYCLE_LABEL = {

@@ -1,9 +1,9 @@
 /** S02 Explore map + S03 list + S05 collapsed detail sheet. */
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
+import { FlatList, Platform, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Search, List, Map as MapIcon, LocateFixed, SlidersHorizontal, X, Bookmark, BookmarkCheck, NotebookPen, Share2, Info, RefreshCw } from 'lucide-react-native';
+import { Search, List, Map as MapIcon, LocateFixed, SlidersHorizontal, X, Bookmark, BookmarkCheck, NotebookPen, Share2, Info, RefreshCw, CloudDownload } from 'lucide-react-native';
 import { useStore } from '../../data/store';
 import { useTheme } from '../../design/theme';
 import { Banner, Button, Chip, DemoBanner, IconButton, Pill, T } from '../../design/ui';
@@ -15,7 +15,8 @@ import { PlaceSearch } from '../../features/explore/PlaceSearch';
 import { SettingsGear } from '../../features/SettingsGear';
 import { CategoryIcon } from '../../features/CategoryIcon';
 import { applyFilters, activeFilterCount, CHIP_FILTERS, inBbox, sortByDistance } from '../../domain/filters';
-import { distanceFor, installationTitle, observedLabel, placeLabelOf, sourceBadge, fmtDate } from '../../features/format';
+import { areaName, distanceFor, distanceRowText, installationTitle, observedLabel, placeLabelOf, sourceBadge, fmtDate } from '../../features/format';
+import { OVERPASS_ENDPOINT } from '../../data/publicData';
 import { requestFix } from '../../platform/location';
 import { shareBytes, copyText } from '../../platform/files';
 import type { CameraInstallation } from '../../domain/schemas';
@@ -46,7 +47,16 @@ export default function Explore() {
   const [sort, setSort] = useState<Sort>(s.reference ? 'distance' : 'observed');
   const [bookmarked, setBookmarked] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
+  const [dlBusy, setDlBusy] = useState(false);
+  const [dlError, setDlError] = useState<string | null>(null);
   const lastCenter = useRef(center);
+
+  // Toasts are transient confirmations; they clear themselves after a few seconds.
+  React.useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 5000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   const f = s.settings.filters;
   const chipId = f.categories.length === 0 ? 'all' : (CHIP_FILTERS.find((ch) => ch.categories.length && ch.categories.length === f.categories.length && ch.categories.every((x) => f.categories.includes(x)))?.id ?? null);
@@ -69,7 +79,24 @@ export default function Explore() {
   }, [inArea, sort, s.reference]);
   const manufacturersPresent = useMemo(() => [...new Set(s.installations.map((i) => i.manufacturerId).filter(Boolean) as string[])].sort(), [s.installations]);
   const selected = selectedId ? s.installation(selectedId) : null;
-  const region = s.publicData.regions[0]?.manifest;
+  const viewCenter = viewport ? { lat: (viewport[1] + viewport[3]) / 2, lon: (viewport[0] + viewport[2]) / 2 } : null;
+  const covered = !viewCenter || s.publicData.covers(viewCenter);
+  const region = (viewCenter && s.publicData.regions.find((r) => r.manifest.bbox[0] <= viewCenter.lon && viewCenter.lon <= r.manifest.bbox[2] && r.manifest.bbox[1] <= viewCenter.lat && viewCenter.lat <= r.manifest.bbox[3])?.manifest) || s.publicData.regions[0]?.manifest;
+  const viewTooLarge = !!viewport && (viewport[2] - viewport[0] > 1 || viewport[3] - viewport[1] > 1);
+  const showDownload = !s.settings.demoMode && !covered && !!viewport;
+
+  const downloadArea = async () => {
+    if (!viewport || !viewCenter) return;
+    setDlBusy(true);
+    setDlError(null);
+    const name = areaName(viewCenter.lat, viewCenter.lon);
+    const r = await s.publicData.downloadArea(viewport, name);
+    setDlBusy(false);
+    if (!r.ok) return setDlError(r.error);
+    s.bumpData();
+    const n = r.region.installations.length;
+    setToast(n ? `Downloaded ${n} mapped record${n === 1 ? '' : 's'} · ${name}` : `No mapped records found · ${name}. That does not mean no cameras are present.`);
+  };
 
   const onRegion = useCallback((bbox: [number, number, number, number], ctr: { lat: number; lon: number; zoom: number }) => {
     setViewport((prev) => {
@@ -97,7 +124,7 @@ export default function Explore() {
     const r = await requestFix();
     setLocBusy(false);
     if (!r.ok) {
-      setLocMsg(`${r.message} Search a place or enter coordinates instead — everything else keeps working.`);
+      setLocMsg(r.reason === 'denied' ? `${r.message} Everything else keeps working.` : `${r.message} Search a place or enter coordinates instead — everything else keeps working.`);
       return;
     }
     s.setReference(r.ref);
@@ -228,7 +255,7 @@ export default function Explore() {
             {placeLabelOf(i)}
           </T>
           <T v="caption" color={c.text2} style={{ fontVariant: ['tabular-nums'] }}>
-            {[d ? d.primary.replace(' · straight-line', '') : null, sourceBadge(i, s.claimsFor(i.id)), observedLabel(i)].filter(Boolean).join(' · ')}
+            {[d ? distanceRowText(d) : null, sourceBadge(i, s.claimsFor(i.id)), observedLabel(i)].filter(Boolean).join(' · ')}
           </T>
         </View>
       </Pressable>
@@ -280,7 +307,7 @@ export default function Explore() {
         onRegion={onRegion}
       />
       {s.settings.offlineOnly && (
-        <View style={{ position: 'absolute', top: SPACE.m, left: SPACE.m, right: 64 }}>
+        <View style={{ position: 'absolute', top: SPACE.m, left: Platform.OS === 'web' ? 56 : SPACE.m, right: 64 }}>
           <Banner kind="info">Map background unavailable offline. Pins and the list still work.</Banner>
         </View>
       )}
@@ -371,6 +398,26 @@ export default function Explore() {
         )}
         {!wide && view === 'map' && Sheet}
         {Coverage}
+        {showDownload && (
+          <View style={{ marginHorizontal: SPACE.m, backgroundColor: c.surface, borderRadius: RADIUS.card, borderWidth: 1, borderColor: c.border, padding: SPACE.m, gap: SPACE.s }}>
+            <T v="body" style={{ fontWeight: '600' }}>
+              No camera data downloaded for this area
+            </T>
+            {dlError && <Banner kind="error">{dlError}</Banner>}
+            {s.settings.offlineOnly ? (
+              <T v="small" color={c.text2}>Offline-only mode is on. Turn it off in Settings to download data.</T>
+            ) : viewTooLarge ? (
+              <T v="small" color={c.text2}>Zoom in to a town or neighbourhood to download its mapped records.</T>
+            ) : (
+              <>
+                <Button label={dlBusy ? 'Downloading…' : 'Download camera data for this area'} busy={dlBusy} disabled={dlBusy} icon={<CloudDownload size={18} color={c.onPrimary} />} onPress={downloadArea} />
+                <T v="caption" color={c.text2}>
+                  {`Sends this map area (not your location) to ${new URL(OVERPASS_ENDPOINT).hostname}, the OpenStreetMap query service. Records are saved on this device.`}
+                </T>
+              </>
+            )}
+          </View>
+        )}
         {Summary}
         {view === 'map' && !s.settings.offlineOnly && (
           <T v="caption" color={c.text2} center style={{ backgroundColor: c.canvas + 'CC', alignSelf: 'center', paddingHorizontal: 8, borderRadius: 6 }}>

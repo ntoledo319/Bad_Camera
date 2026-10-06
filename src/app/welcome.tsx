@@ -70,7 +70,7 @@ export default function Welcome() {
               s.setReference(r.ref);
               await finish(false);
             } else {
-              setMsg(`${r.message} You can still explore by searching a place or entering coordinates.`);
+              setMsg(r.reason === 'denied' ? r.message : `${r.message} You can still explore by searching a place or entering coordinates.`);
             }
           }}
         />
