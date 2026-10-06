@@ -1,34 +1,108 @@
 {
   "expo": {
-    "name": "sightline-tmp",
-    "slug": "sightline-tmp",
-    "version": "1.0.0",
-    "orientation": "portrait",
+    "name": "Sightline",
+    "slug": "sightline",
+    "version": "0.1.0",
+    "orientation": "default",
+    "scheme": "sightline",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
+    "description": "Know what is watching. Keep the evidence. A no-login, local-first camera-transparency field guide and evidence notebook.",
+    "primaryColor": "#14675F",
+    "backgroundColor": "#F6F4EE",
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "org.sightline.app",
+      "supportsTablet": true,
+      "config": { "usesNonExemptEncryption": false },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIBackgroundModes": []
+      },
+      "privacyManifests": {
+        "NSPrivacyTracking": false,
+        "NSPrivacyTrackingDomains": [],
+        "NSPrivacyCollectedDataTypes": [],
+        "NSPrivacyAccessedAPITypes": [
+          { "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryFileTimestamp", "NSPrivacyAccessedAPITypeReasons": ["C617.1"] },
+          { "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryDiskSpace", "NSPrivacyAccessedAPITypeReasons": ["E174.1"] },
+          { "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults", "NSPrivacyAccessedAPITypeReasons": ["CA92.1"] }
+        ]
+      }
     },
     "android": {
+      "package": "org.sightline.app",
+      "allowBackup": false,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#14675F",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": true,
+      "permissions": ["android.permission.CAMERA", "android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.NEARBY_WIFI_DEVICES",
+        "android.permission.READ_CONTACTS",
+        "android.permission.READ_SMS",
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "com.google.android.gms.permission.AD_ID"
+      ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "output": "single",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-router",
       "expo-status-bar",
-      "expo-sqlite",
+      ["expo-sqlite", { "useSQLCipher": false, "enableFTS": false }],
       "expo-sharing",
       "expo-secure-store",
       "@maplibre/maplibre-react-native",
-      "expo-splash-screen"
-    ]
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Sightline lets you choose photos you took of public infrastructure so you can keep them in your private notebook.",
+          "cameraPermission": "Sightline uses the camera only when you tap Take a photo, to document public infrastructure in your private notebook.",
+          "microphonePermission": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Sightline uses your location only while you are using the app, to show approximate straight-line distance to mapped records and to note where you stood when you record an observation.",
+          "locationAlwaysAndWhenInUsePermission": false,
+          "locationAlwaysPermission": false,
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false
+        }
+      ],
+      ["expo-local-authentication", { "faceIDPermission": "Sightline can use Face ID to lock your private notebook if you turn on App lock." }],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "backgroundColor": "#F6F4EE",
+          "dark": { "image": "./assets/splash-icon-dark.png", "backgroundColor": "#101A18" }
+        }
+      ]
+    ],
+    "experiments": { "typedRoutes": false }
   }
 }
