@@ -131,7 +131,8 @@ export class Notebook {
     if (!revs.length) return;
     const attIds = new Set(revs.flatMap((r) => r.attachments));
     const atts = (await Promise.all([...attIds].map((a) => this.attachment(a)))).filter(Boolean) as Attachment[];
-    await this.kv.commit([...revs.map((r) => ({ type: 'del' as const, key: revKey(id, r.revision) })), ...atts.map((a) => ({ type: 'del' as const, key: `att/${a.id}` }))]);
+    const exps = await this.kv.list(`exp/${id}/`);
+    await this.kv.commit([...revs.map((r) => ({ type: 'del' as const, key: revKey(id, r.revision) })), ...atts.map((a) => ({ type: 'del' as const, key: `att/${a.id}` })), ...exps.map((e) => ({ type: 'del' as const, key: e.key }))]);
     for (const a of atts) await this.kv.delBlob(a.relativePrivatePath).catch(() => {});
   }
 
@@ -185,6 +186,15 @@ export class Notebook {
     await this.kv.commit([{ type: 'del', key: `col/${id}` }]);
   }
 
+  // ---------------------------------------------------------------- export log (timeline only; no content)
+  async logExport(recordId: string, kind: string, status: string, sha256: string | null, now = new Date().toISOString()) {
+    const e = { recordId, kind, status, sha256, at: now };
+    await this.kv.commit([{ type: 'put', key: `exp/${recordId}/${now}`, value: JSON.stringify(e) }]);
+  }
+  async exportLog(recordId: string): Promise<{ recordId: string; kind: string; status: string; sha256: string | null; at: string }[]> {
+    return (await this.kv.list(`exp/${recordId}/`)).map((r) => JSON.parse(r.value));
+  }
+
   // ---------------------------------------------------------------- drafts & settings
   async saveDraft(d: unknown) {
     await this.kv.commit([{ type: 'put', key: 'draft/current', value: JSON.stringify(d) }]);
@@ -195,6 +205,18 @@ export class Notebook {
   }
   async clearDraft() {
     await this.kv.commit([{ type: 'del', key: 'draft/current' }]);
+  }
+  /** Draft photos are kept as (encrypted on native) blobs so an interrupted draft survives restart. */
+  async putDraftPhoto(bytes: Uint8Array): Promise<string> {
+    const id = `d_${bytesToHex(randomBytes(16))}`;
+    await this.kv.putBlob(id, bytes);
+    return id;
+  }
+  async draftPhoto(id: string): Promise<Uint8Array | null> {
+    return this.kv.getBlob(id);
+  }
+  async dropDraftPhotos(ids: string[]) {
+    for (const id of ids) await this.kv.delBlob(id).catch(() => {});
   }
   async settings(): Promise<Settings> {
     const v = await this.kv.get('settings');
@@ -268,6 +290,15 @@ export class Notebook {
     }
     await this.kv.commit(ops);
     return { added, skipped, keptBoth };
+  }
+
+  /** Insert pre-built records verbatim (used only for the separate demo notebook). */
+  async seed(revisions: Observation[], attachments: { attachment: Attachment; bytes: Uint8Array }[]) {
+    for (const a of attachments) await this.kv.putBlob(a.attachment.relativePrivatePath, a.bytes);
+    await this.kv.commit([
+      ...attachments.map((a) => ({ type: 'put' as const, key: `att/${a.attachment.id}`, value: JSON.stringify(a.attachment) })),
+      ...revisions.map((r) => ({ type: 'put' as const, key: revKey(r.id, r.revision), value: JSON.stringify(r) })),
+    ]);
   }
 
   async wipe() {

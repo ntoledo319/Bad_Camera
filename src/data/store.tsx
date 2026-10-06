@@ -13,6 +13,7 @@ import { DEMO_CLAIMS, DEMO_INSTALLATION, DEMO_SOURCE, DEMO_PHOTO_SOURCE } from '
 import { SOURCE_BY_ID } from '../../content/sources';
 import { log } from '../platform/diagnostics';
 import { stopWatch } from '../platform/location';
+import { ensureDemoSeeded } from '../features/demo/seed';
 
 export interface AppStore {
   ready: boolean;
@@ -58,6 +59,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       try {
         await privateNb.init();
         await demoNb.init();
+        await ensureDemoSeeded(demoNb).catch((e) => log('warn', 'demo.seed', (e as Error).message));
         await pub.init();
         const s = await privateNb.settings();
         setSettings(s);
