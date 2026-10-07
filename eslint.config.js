@@ -16,7 +16,7 @@ module.exports = defineConfig([
   },
   {
     // zod idiom: `export const X = z.object(...)` paired with `export type X = z.infer<typeof X>`.
-    files: ['src/domain/schemas.ts'],
+    files: ['src/domain/schemas.ts', 'src/domain/tiles.ts'],
     rules: { '@typescript-eslint/no-redeclare': 'off' },
   },
 ]);

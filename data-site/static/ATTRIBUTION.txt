@@ -1,0 +1,20 @@
+Sightline camera data
+=====================
+
+Contains information from OpenStreetMap, which is made available here under the
+Open Database License (ODbL) 1.0: https://opendatacommons.org/licenses/odbl/1-0/
+
+© OpenStreetMap contributors — https://www.openstreetmap.org/copyright
+
+This site publishes a derived database: OpenStreetMap elements tagged
+man_made=surveillance or highway=speed_camera in the United States and Puerto Rico
+(plus border areas of Canada and Mexico inside the same grid), with mapper usernames, user ids and changeset ids removed,
+grouped into map tiles. The derived database is offered under the ODbL 1.0.
+If you publicly use or redistribute it, you must keep this attribution and make any
+derived database you publish available under the ODbL.
+
+Build code and normalization rules: https://github.com/ntoledo319/Bad_Camera
+(tools/data-site/ and docs/SOURCES.md).
+
+Records are community reports. They can be wrong or out of date and do not show
+that any device is operating or recorded anyone.

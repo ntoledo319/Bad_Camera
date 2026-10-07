@@ -18,3 +18,9 @@ artifacts/private/
 *.log
 /public/maplibre/
 .DS_Store
+GATES.md
+.unlazy/
+.unlazy-hook-state.json
+/data-site/dist/
+/data-site/cache/
+/data-site/cache-grid/

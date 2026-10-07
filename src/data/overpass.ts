@@ -9,6 +9,8 @@ const UA = 'Sightline/0.1 (privacy-first camera transparency notebook; https://g
 
 export interface OverpassOptions {
   fetchImpl?: typeof fetch;
+  /** Overpass interpreter URL; defaults to OVERPASS_ENDPOINT. */
+  endpoint?: string;
   signal?: AbortSignal;
   timeoutMs?: number;
   maxRetries?: number;
@@ -45,7 +47,7 @@ export function backoffMs(attempt: number, random: () => number = Math.random): 
 }
 
 export async function overpassRequest(query: string, o: OverpassOptions = {}): Promise<string> {
-  const { fetchImpl = fetch, signal, timeoutMs = 30_000, maxRetries = 3, maxBytes = 20_000_000, random = Math.random } = o;
+  const { fetchImpl = fetch, endpoint = OVERPASS_ENDPOINT, signal, timeoutMs = 30_000, maxRetries = 3, maxBytes = 20_000_000, random = Math.random } = o;
   const sleep = o.sleep ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
   if (inFlight) throw new OverpassError('Another camera-data request is already running. Wait for it to finish.', false);
   inFlight = true;
@@ -59,7 +61,7 @@ export async function overpassRequest(query: string, o: OverpassOptions = {}): P
       const timer = setTimeout(() => ctl.abort(), timeoutMs);
       let wait: number | null = null;
       try {
-        const res = await fetchImpl(OVERPASS_ENDPOINT, {
+        const res = await fetchImpl(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': UA },
           body: 'data=' + encodeURIComponent(query),

@@ -90,6 +90,8 @@ export function CameraMap(p: MapViewProps) {
 
   return (
     <View style={{ flex: 1 }}>
+      {/* MapLibre's controls ship light-only; match the app palette. */}
+      <style>{`.maplibregl-ctrl-group{background:${p.palette.surface};border:1px solid ${p.palette.border};box-shadow:none}.maplibregl-ctrl-group button .maplibregl-ctrl-icon{filter:${p.dark ? 'invert(1) hue-rotate(180deg)' : 'none'}}`}</style>
       <div ref={host} style={{ position: 'absolute', inset: 0 }} aria-label="Map of mapped records. Use the List view for an accessible equivalent." role="region" />
     </View>
   );

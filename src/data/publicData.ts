@@ -11,10 +11,14 @@ import { CameraInstallation, Claim, DataRegionManifest, Source } from '../domain
 import { buildOverpassQuery, mergeRegion, normalizeOsm, NORMALIZATION_VERSION, OSM_ATTRIBUTION, type OsmElement } from '../domain/osm';
 import { sha256Hex } from '../domain/hash';
 import { overpassRequest, OVERPASS_ENDPOINT, type OverpassOptions } from './overpass';
+import { DATA_HOST, fetchSiteManifest, fetchTile, type HostOptions } from './dataHost';
+import { tilesForView, type SiteManifest, type TileEntry, type TileFile } from '../domain/tiles';
 import bundledRegion from '../../content/regions/fairfield-ct/region.json';
 import bundledManifest from '../../content/regions/fairfield-ct/manifest.json';
 
-export { OVERPASS_ENDPOINT };
+export { OVERPASS_ENDPOINT, DATA_HOST };
+
+const isHosted = (r: RegionData) => r.manifest.provider.startsWith('Sightline data site');
 
 export interface RegionData {
   manifest: DataRegionManifest;
@@ -142,6 +146,85 @@ export class PublicData {
     return { text, query, raw, fetchedAt, norm };
   }
 
+  private regionFromTile(entry: TileEntry, tile: TileFile, bytes: number, site: SiteManifest, host: string): RegionData {
+    const fetchedAt = new Date().toISOString();
+    const norm = normalizeOsm(tile.elements, { fetchedAt, regionId: entry.id, endpoint: host, retrievalMethod: `Sightline data site (${host}), built ${site.generatedAt} from OpenStreetMap` });
+    return {
+      manifest: DataRegionManifest.parse({
+        id: entry.id,
+        name: entry.name,
+        bbox: entry.bbox,
+        provider: 'Sightline data site (OpenStreetMap)',
+        endpoint: host,
+        query: null,
+        fetchedAt,
+        upstreamTimestamp: site.upstreamTimestamp,
+        recordCount: norm.installations.length,
+        bytes,
+        sha256: entry.sha256,
+        attribution: site.attribution,
+        licenseId: 'ODbL-1.0',
+        normalizationVersion: site.normalizationVersion,
+        status: 'current',
+        lastError: null,
+      }),
+      installations: norm.installations,
+      sources: norm.sources,
+      claims: norm.claims,
+    };
+  }
+
+  private async saveRegions(add: RegionData[]) {
+    if (!add.length) return;
+    const ids = new Set(await this.areaIds());
+    const ops: { type: 'put'; key: string; value: string }[] = add.map((r) => ({ type: 'put', key: `region/${r.manifest.id}`, value: JSON.stringify(r) }));
+    for (const r of add) if (r.manifest.id !== BUNDLED_REGION_ID) ids.add(r.manifest.id);
+    ops.push({ type: 'put', key: INDEX_KEY, value: JSON.stringify([...ids]) });
+    await this.kv.commit(ops);
+    const replaced = new Set(add.map((r) => r.manifest.id));
+    this.regions = [...this.regions.filter((r) => !replaced.has(r.manifest.id)), ...add];
+  }
+
+  /**
+   * User-triggered download from the published data site: every tile touching the view
+   * (nearest first, at most 12), each checked against its published SHA-256. Tiles already
+   * on the device with the same checksum are not downloaded again. An area the site covers
+   * but has no tiles for is remembered as checked-and-empty.
+   */
+  async downloadFromHost(view: Bbox, emptyName: string, o: HostOptions = {}): Promise<{ ok: true; tiles: number; records: number; skipped: number } | { ok: false; error: string }> {
+    const host = o.host ?? DATA_HOST;
+    const area = downloadableBbox(view);
+    if (!area) return { ok: false, error: 'This map area is not valid for a download.' };
+    try {
+      const site = await fetchSiteManifest({ ...o, host });
+      const wanted = tilesForView(site, area);
+      const add: RegionData[] = [];
+      let skipped = 0;
+      for (const entry of wanted) {
+        const have = this.regions.find((r) => r.manifest.id === entry.id);
+        if (have && have.manifest.sha256 === entry.sha256) {
+          skipped++;
+          continue;
+        }
+        const { tile, bytes } = await fetchTile(entry, { ...o, host });
+        add.push(this.regionFromTile(entry, tile, bytes, site, host));
+      }
+      if (!wanted.length) {
+        const id = `empty-${area.map((n) => n.toFixed(3)).join('_').replace(/-/g, 'm').replace(/\./g, 'p')}`;
+        add.push({
+          manifest: DataRegionManifest.parse({ id, name: `${emptyName} (no mapped records)`, bbox: area, provider: 'Sightline data site (OpenStreetMap)', endpoint: host, query: null, fetchedAt: new Date().toISOString(), upstreamTimestamp: site.upstreamTimestamp, recordCount: 0, bytes: 0, sha256: null, attribution: site.attribution, licenseId: 'ODbL-1.0', normalizationVersion: site.normalizationVersion, status: 'current', lastError: null }),
+          installations: [],
+          sources: [],
+          claims: [],
+        });
+      }
+      await this.saveRegions(add);
+      return { ok: true, tiles: add.filter((r) => r.manifest.recordCount > 0).length, records: add.reduce((n, r) => n + r.installations.length, 0), skipped };
+    } catch (e) {
+      return { ok: false, error: (e as Error).message };
+    }
+  }
+
   /** User-triggered download of the area on screen (clamped to MAX_AREA_SIDE_DEG). Never automatic. */
   async downloadArea(view: Bbox, name: string, o: OverpassOptions = {}): Promise<{ ok: true; region: RegionData } | { ok: false; error: string }> {
     const bbox = downloadableBbox(view);
@@ -189,6 +272,7 @@ export class PublicData {
     const idx = this.regions.findIndex((r) => r.manifest.id === regionId);
     if (idx < 0) return { ok: false, added: 0, updated: 0, missing: 0, error: 'Unknown region' };
     const cur = this.regions[idx];
+    if (isHosted(cur)) return this.refreshHosted(idx, o as HostOptions);
     try {
       const { text, raw, fetchedAt, norm } = await this.fetchArea(cur.manifest.bbox as Bbox, regionId, o);
       const m = mergeRegion(cur.installations, norm.installations);
@@ -202,6 +286,40 @@ export class PublicData {
       };
       await this.kv.commit([{ type: 'put', key: `region/${regionId}`, value: JSON.stringify(next) }]);
       this.regions[idx] = next;
+      return { ok: true, added: m.added, updated: m.updated, missing: m.missing.length };
+    } catch (e) {
+      const msg = (e as Error).message;
+      this.regions[idx] = { ...cur, manifest: { ...cur.manifest, status: 'refreshFailed', lastError: msg } };
+      return { ok: false, added: 0, updated: 0, missing: 0, error: msg };
+    }
+  }
+
+  private async refreshHosted(idx: number, o: HostOptions) {
+    const cur = this.regions[idx];
+    const host = cur.manifest.endpoint ?? DATA_HOST;
+    try {
+      const site = await fetchSiteManifest({ ...o, host });
+      const entry = site.tiles.find((t) => t.id === cur.manifest.id);
+      if (!entry && cur.manifest.recordCount === 0) {
+        await this.saveRegions([{ ...cur, manifest: { ...cur.manifest, fetchedAt: new Date().toISOString(), status: 'current', lastError: null } }]);
+        return { ok: true, added: 0, updated: 0, missing: 0 };
+      }
+      if (entry && entry.sha256 === cur.manifest.sha256) {
+        await this.saveRegions([{ ...cur, manifest: { ...cur.manifest, fetchedAt: new Date().toISOString(), status: 'current', lastError: null } }]);
+        return { ok: true, added: 0, updated: 0, missing: 0 };
+      }
+      const incoming = entry ? await fetchTile(entry, { ...o, host }) : null;
+      const fresh = incoming && entry ? this.regionFromTile(entry, incoming.tile, incoming.bytes, site, host) : { ...cur, installations: [], sources: [], claims: [] };
+      const m = mergeRegion(cur.installations, fresh.installations);
+      const srcIds = new Set(fresh.sources.map((x) => x.id));
+      const clmIds = new Set(fresh.claims.map((x) => x.id));
+      const next: RegionData = {
+        manifest: { ...(entry ? fresh.manifest : cur.manifest), recordCount: m.merged.length, status: 'current', lastError: null, fetchedAt: new Date().toISOString() },
+        installations: m.merged,
+        sources: [...fresh.sources, ...cur.sources.filter((x) => !srcIds.has(x.id))],
+        claims: [...fresh.claims, ...cur.claims.filter((x) => !clmIds.has(x.id))],
+      };
+      await this.saveRegions([next]);
       return { ok: true, added: m.added, updated: m.updated, missing: m.missing.length };
     } catch (e) {
       const msg = (e as Error).message;

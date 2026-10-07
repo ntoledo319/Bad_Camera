@@ -35,9 +35,9 @@ export default function Welcome() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
-  const finish = async (demo = false) => {
+  const finish = async (demo = false, search = false) => {
     await s.updateSettings({ onboarded: true, demoMode: demo });
-    router.replace('/explore');
+    router.replace(search ? '/explore?search=1' : '/explore');
   };
 
   return (
@@ -56,7 +56,7 @@ export default function Welcome() {
       </View>
       {msg && <Banner kind="caution">{msg}</Banner>}
       <View style={{ gap: SPACE.m }}>
-        <Button label="Explore a place" icon={<MapPin size={20} color={c.onPrimary} />} onPress={() => finish(false)} testID="welcome-explore" />
+        <Button label="Explore a place" icon={<MapPin size={20} color={c.onPrimary} />} onPress={() => finish(false, true)} testID="welcome-explore" />
         <Button
           label="Use my location"
           kind="secondary"

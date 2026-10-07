@@ -48,9 +48,11 @@
     "@types/react": "~19.2.2",
     "eslint": "^9.39.5",
     "eslint-config-expo": "^57.0.2",
+    "playwright": "^1.63.0",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "yaml": "^2.9.1"
   },
   "scripts": {
     "start": "expo start",
@@ -67,7 +69,10 @@
     "export:web": "expo export -p web",
     "prebuild": "expo prebuild --clean --no-install",
     "postinstall": "node tools/web/copy-maplibre-worker.mjs",
-    "check": "tsc --noEmit && eslint src content tools tests && vitest run && tsx tools/content-check/check.ts"
+    "check": "tsc --noEmit && eslint src content tools tests && vitest run && tsx tools/content-check/check.ts && tsx tools/content-check/legal-ledger.ts --check && tsx tools/content-check/records-laws.ts",
+    "data:build": "tsx tools/data-site/build.ts --cache data-site/cache-grid",
+    "data:verify": "tsx tools/data-site/verify-site.ts --dir data-site/dist",
+    "data:deploy": "node tools/data-site/deploy.mjs"
   },
   "private": true
 }

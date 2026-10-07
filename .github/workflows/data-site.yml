@@ -1,0 +1,59 @@
+# Rebuilds the public camera-data site from OpenStreetMap every day and publishes it to
+# Cloudflare Pages (free plan). One-time setup: `npm run data:deploy` (see docs/DEPLOY.md).
+# Without the two Cloudflare secrets the job still builds and verifies, then keeps the site as a
+# downloadable artifact instead of deploying.
+name: Camera data site
+
+on:
+  schedule:
+    - cron: '23 7 * * *' # daily, 07:23 UTC (off-peak for the volunteer Overpass servers)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: data-site
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT || 'sightline-data' }}
+      SITE_URL: ${{ vars.DATA_SITE_URL || 'https://sightline-data.pages.dev' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build site from OpenStreetMap (keeps last published copy for any area that fails)
+        run: npx tsx tools/data-site/build.ts --previous "$SITE_URL" --pause 1500
+
+      - name: Verify site
+        run: npx tsx tools/data-site/verify-site.ts --dir data-site/dist --min-records 1000
+
+      - name: Deploy to Cloudflare Pages
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: npx --yes wrangler@4 pages deploy data-site/dist --project-name "$PAGES_PROJECT" --branch main --commit-dirty=true
+
+      - name: Verify published site
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != ''
+        run: sleep 30 && npx tsx tools/data-site/verify-site.ts --remote "$SITE_URL" --min-records 1000
+
+      - name: Keep the built site as an artifact (no Cloudflare secrets yet)
+        if: env.CLOUDFLARE_API_TOKEN == '' || env.CLOUDFLARE_ACCOUNT_ID == ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: data-site
+          path: data-site/dist
+          retention-days: 7

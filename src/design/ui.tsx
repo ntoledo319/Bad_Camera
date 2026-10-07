@@ -95,7 +95,7 @@ export function Button({
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: !!(disabled || busy), busy: !!busy }}
       style={({ pressed }) => [
-        { minHeight: SIZE.button, borderRadius: RADIUS.control, backgroundColor: bg, borderColor: border, borderWidth: kind === 'ghost' ? 0 : 1.5, paddingHorizontal: SPACE.xl, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: SPACE.s },
+        { minHeight: SIZE.button, borderRadius: RADIUS.control, backgroundColor: bg, borderColor: border, borderWidth: kind === 'ghost' ? 0 : 1.5, paddingHorizontal: kind === 'ghost' ? SPACE.m : SPACE.xl, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: SPACE.s },
         (disabled || busy) && { opacity: 0.5 },
         pressed && { opacity: 0.8 },
         style,

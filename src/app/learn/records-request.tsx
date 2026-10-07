@@ -1,13 +1,14 @@
 /** S18 Records request builder: local draft only. Never sends; no invented officials/addresses/deadlines. */
 import React, { useEffect, useMemo, useState } from 'react';
-import { View } from 'react-native';
-import { Copy, Download } from 'lucide-react-native';
+import { Linking, View } from 'react-native';
+import { Copy, Download, ExternalLink } from 'lucide-react-native';
 import { useStore } from '../../data/store';
 import { useTheme } from '../../design/theme';
-import { Banner, Button, Card, Chip, Field, Screen, Section, Segmented, T } from '../../design/ui';
+import { Banner, Button, Card, Chip, Field, KV, Pill, Screen, Section, T } from '../../design/ui';
 import { SPACE } from '../../design/tokens';
 import { buildRecordsRequest, RECORD_CATEGORIES, type RecordCategoryId, type RecordsRequestInput } from '../../domain/records';
 import { copyText, saveBytes } from '../../platform/files';
+import { RECORDS_LAWS, RECORDS_LAW_BY_CODE, RECORDS_LAWS_CHECKED_AT } from '../../../content/legal/recordsLaws';
 
 const KEY = 'records-request';
 
@@ -16,6 +17,8 @@ export default function RecordsRequest() {
   const { c } = useTheme();
   const [i, setI] = useState<RecordsRequestInput>({ agency: '', system: '', dateRange: '', categories: ['contracts', 'policies', 'locations'], feeLimit: '', signature: '', jurisdiction: 'CT' });
   const [note, setNote] = useState<{ kind: 'info' | 'error'; text: string } | null>(null);
+  const [lawQuery, setLawQuery] = useState('');
+  const [picking, setPicking] = useState(false);
   useEffect(() => {
     s.privateNotebook.kv.get(`rr/${KEY}`).then((v) => v && setI({ ...i, ...JSON.parse(v) })).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -28,21 +31,55 @@ export default function RecordsRequest() {
   const set = (p: Partial<RecordsRequestInput>) => setI({ ...i, ...p });
   const toggleCat = (id: RecordCategoryId) => set({ categories: i.categories.includes(id) ? i.categories.filter((x) => x !== id) : [...i.categories, id] });
   const full = `Subject: ${out.subject}\n\n${out.body}`;
+  const law = RECORDS_LAW_BY_CODE[i.jurisdiction];
+  const q = lawQuery.trim().toLowerCase();
+  const matches = q ? RECORDS_LAWS.filter((l) => l.jurisdiction.toLowerCase().includes(q) || l.code.toLowerCase() === q).slice(0, 10) : RECORDS_LAWS;
 
   return (
     <Screen scroll>
       <T v="small" style={{ color: c.text2, marginTop: SPACE.xs }}>Build a draft here, then send it yourself by email, portal or mail. Sightline never sends anything.</T>
       <Section title="Details">
         <Card>
-          <Segmented
-            label="Law"
-            options={[
-              { key: 'CT', label: 'Connecticut FOIA' },
-              { key: 'generic', label: 'Generic (no citation)' },
-            ]}
-            value={i.jurisdiction}
-            onChange={(k) => set({ jurisdiction: k })}
-          />
+          <T v="small" style={{ fontWeight: '600' }}>State law</T>
+          {picking ? (
+            <View style={{ gap: SPACE.s, marginTop: SPACE.s }}>
+              <Field label="Find your state" placeholder="e.g. Ohio" value={lawQuery} onChangeText={setLawQuery} autoFocus autoCorrect={false} />
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACE.s }}>
+                {matches.map((l) => (
+                  <Chip
+                    key={l.code}
+                    label={l.jurisdiction}
+                    selected={i.jurisdiction === l.code}
+                    onPress={() => {
+                      set({ jurisdiction: l.code });
+                      setPicking(false);
+                      setLawQuery('');
+                    }}
+                  />
+                ))}
+                <Chip label="No citation (generic)" selected={i.jurisdiction === 'generic'} onPress={() => (set({ jurisdiction: 'generic' }), setPicking(false))} />
+              </View>
+            </View>
+          ) : (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: SPACE.s, marginTop: SPACE.s, flexWrap: 'wrap' }}>
+              <Pill label={law ? law.jurisdiction : 'No citation (generic)'} tone="primary" />
+              <Button kind="ghost" label="Change state" onPress={() => setPicking(true)} />
+            </View>
+          )}
+          {law && !picking ? (
+            <View style={{ gap: SPACE.xs, marginTop: SPACE.s }}>
+              <KV k="Law" v={law.lawName} />
+              <KV k="Citation" v={law.citation} />
+              <KV k="Response time in the law" v={law.responseTime ?? 'No fixed deadline found in the text we read (often “promptly” or “reasonable time”)'} />
+              {law.notes ? <T v="caption" color={c.text2}>{law.notes}</T> : null}
+              {!law.verified ? <T v="caption" color={c.caution}>This citation could not be confirmed against the official text (the site blocked automated access). Check it before sending.</T> : null}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACE.s }}>
+                <Button kind="ghost" label="Read the law" icon={<ExternalLink size={18} color={c.primary} />} onPress={() => Linking.openURL(law.officialUrl).catch(() => {})} />
+                {law.guideUrl ? <Button kind="ghost" label="Official guide" icon={<ExternalLink size={18} color={c.primary} />} onPress={() => Linking.openURL(law.guideUrl!).catch(() => {})} /> : null}
+              </View>
+              <T v="caption" color={c.text2}>{`Researched ${RECORDS_LAWS_CHECKED_AT}. Laws change; confirm with the agency or official guide.`}</T>
+            </View>
+          ) : null}
           <View style={{ gap: SPACE.m, marginTop: SPACE.m }}>
             <Field label="Agency" placeholder="e.g. Town of Fairfield Police Department" value={i.agency} onChangeText={(v) => set({ agency: v })} hint="Check the agency’s own website for its records contact." />
             <Field label="System or program" placeholder="e.g. automated license plate reader program" value={i.system} onChangeText={(v) => set({ system: v })} />

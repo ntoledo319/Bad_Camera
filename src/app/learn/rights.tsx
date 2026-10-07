@@ -6,7 +6,7 @@ import { ChevronDown, ChevronUp, Copy } from 'lucide-react-native';
 import { useTheme } from '../../design/theme';
 import { Banner, Button, Card, Pill, Screen, Section, Segmented, T } from '../../design/ui';
 import { SPACE } from '../../design/tokens';
-import { LEGAL_ARTICLES } from '../../../content/legal/legal';
+import { LEGAL_ARTICLES, REVIEW_LABEL } from '../../../content/legal/legal';
 import { SOURCE_BY_ID } from '../../../content/sources';
 import { fmtDate } from '../../features/format';
 import { copyText } from '../../platform/files';
@@ -24,12 +24,12 @@ export default function Rights() {
   };
   return (
     <Screen scroll>
-      <Segmented label="Jurisdiction" options={LEGAL_ARTICLES.map((x) => ({ key: x.id, label: x.jurisdiction }))} value={which} onChange={setWhich} />
+      <Segmented label="Jurisdiction" options={LEGAL_ARTICLES.map((x) => ({ key: x.id, label: x.id === 'state-alpr-laws' ? 'State ALPR laws' : x.jurisdiction }))} value={which} onChange={setWhich} />
       <T v="title" style={{ marginTop: SPACE.l }}>{a.title}</T>
       <T v="small" style={{ color: c.text2, marginTop: SPACE.xs }}>{a.subtitle}</T>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACE.xs, marginTop: SPACE.s }}>
         <Pill label={`Sources checked ${fmtDate(a.sourceCheckedAt)}`} />
-        <Pill label={a.reviewStatus === 'attorney_reviewed' ? 'Attorney-reviewed' : 'Not attorney-reviewed'} tone="caution" />
+        <Pill label={a.reviewStatus === 'attorney_reviewed' ? 'Attorney-reviewed' : REVIEW_LABEL} tone="caution" />
       </View>
       <View style={{ marginTop: SPACE.m }}>
         <Banner kind="info" title="Information, not legal advice">

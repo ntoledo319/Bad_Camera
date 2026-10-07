@@ -114,7 +114,9 @@ export default function CameraDetail() {
           )}
         </Card>
       ) : (
-        <Banner kind="info">Choose a reference point (search → coordinates) or use your location on Explore to see an approximate distance.</Banner>
+        <Banner kind="info" action={<Button kind="ghost" label="Choose a point" onPress={() => router.push('/explore?search=1')} />}>
+          Choose a reference point or use your location to see an approximate straight-line distance.
+        </Banner>
       )}
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: SPACE.s }}>

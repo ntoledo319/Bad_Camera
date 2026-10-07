@@ -106,7 +106,7 @@ export function stableInstallationId(el: Pick<OsmElement, 'type' | 'id'>): strin
   return `osm-${el.type}-${el.id}`;
 }
 
-export function normalizeOsm(elements: OsmElement[], opts: { fetchedAt: string; regionId: string; endpoint: string }): NormalizedRegion {
+export function normalizeOsm(elements: OsmElement[], opts: { fetchedAt: string; regionId: string; endpoint: string; retrievalMethod?: string }): NormalizedRegion {
   const installations: CameraInstallation[] = [];
   const sources: Source[] = [];
   const claims: Claim[] = [];
@@ -128,6 +128,11 @@ export function normalizeOsm(elements: OsmElement[], opts: { fetchedAt: string; 
     const isSurv = tags['man_made'] === 'surveillance' || tags['highway'] === 'speed_camera';
     if (!isSurv) {
       skipped.push({ ref, reason: 'not a surveillance/enforcement element' });
+      continue;
+    }
+    // Indoor cameras (inside shops, stations…) are not public-facing infrastructure (spec §2).
+    if ((tags['surveillance'] ?? '').toLowerCase() === 'indoor') {
+      skipped.push({ ref, reason: 'indoor camera (not public-facing)' });
       continue;
     }
     let lat: number | undefined;
@@ -171,7 +176,7 @@ export function normalizeOsm(elements: OsmElement[], opts: { fetchedAt: string; 
         snapshotSha256: sha256Hex(JSON.stringify({ type: el.type, id: el.id, version: el.version, tags })),
         availability: 'available',
         attribution: OSM_ATTRIBUTION,
-        retrievalMethod: `Overpass API (${opts.endpoint}), user-triggered bounded query`,
+        retrievalMethod: opts.retrievalMethod ?? `Overpass API (${opts.endpoint}), user-triggered bounded query`,
         scope: 'installation',
       }),
     );

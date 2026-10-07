@@ -38,7 +38,6 @@ export default function CollectionDetail() {
   return (
     <Screen scroll>
       <Stack.Screen options={{ title: col.name }} />
-      <T v="title">{col.name}</T>
       <T v="small" style={{ marginTop: SPACE.xs }}>Created {fmtDate(col.createdAt)} · {items.length} record{items.length === 1 ? '' : 's'}</T>
       {items.length > 0 && (
         <Section title="Export this collection">

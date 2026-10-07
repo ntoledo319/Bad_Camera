@@ -3,9 +3,9 @@
  * Privacy summary before sharing; honest outcome statuses ("Share sheet opened", never "Shared").
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, useWindowDimensions } from 'react-native';
+import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Share2, Download, Copy, ShieldAlert } from 'lucide-react-native';
+import { Share2, Download, Copy, ShieldAlert, Maximize2, Minimize2 } from 'lucide-react-native';
 import { useStore } from '../../data/store';
 import { useTheme } from '../../design/theme';
 import { Banner, Button, Card, DemoBanner, Empty, Loading, Pill, Screen, Section, Segmented, T, Toggle } from '../../design/ui';
@@ -47,6 +47,7 @@ export default function ShareStudio() {
   const [outcome, setOutcome] = useState<{ kind: 'info' | 'caution' | 'error'; title: string; text: string } | null>(null);
   const [privateFull, setPrivateFull] = useState(false);
   const [privateConfirm, setPrivateConfirm] = useState(false);
+  const [zoomed, setZoomed] = useState(false);
   const previewRef = useRef<View>(null);
 
   useEffect(() => {
@@ -144,7 +145,9 @@ export default function ShareStudio() {
       </Screen>
     );
 
-  const displayW = Math.min(winW - 40, 520, isCard ? (fmt === 'story' ? 300 : fmt === 'wide' ? 520 : 400) : 400);
+  const fitW = Math.min(winW - 40, 520, isCard ? (fmt === 'story' ? 300 : fmt === 'wide' ? 520 : 400) : 400);
+  // Zoomed: half the export's pixel width, so small print can be proofread; scroll to see it all.
+  const displayW = zoomed && card ? Math.round(card.width / 2) : fitW;
   const willInclude: string[] = [
     `Type: ${projection.categoryLabel}`,
     projection.identification.familyLabel ? `Identification: ${projection.identification.familyLabel}` : 'Identification: not stated',
@@ -164,7 +167,12 @@ export default function ShareStudio() {
 
       <View style={{ alignItems: 'center', marginTop: SPACE.l }}>
         {isCard && card ? (
-          <CardPreview ref={previewRef} svg={card.svg} width={card.width} height={card.height} displayWidth={displayW} label={cap.alt} />
+          <>
+            <ScrollView horizontal={zoomed} scrollEnabled={zoomed} style={{ maxWidth: '100%' }} contentContainerStyle={{ alignItems: 'center' }}>
+              <CardPreview ref={previewRef} svg={card.svg} width={card.width} height={card.height} displayWidth={displayW} label={cap.alt} />
+            </ScrollView>
+            <Button kind="ghost" label={zoomed ? 'Fit preview to screen' : 'Zoom in to proofread'} icon={zoomed ? <Minimize2 size={18} color={c.primary} /> : <Maximize2 size={18} color={c.primary} />} onPress={() => setZoomed(!zoomed)} />
+          </>
         ) : (
           <Card>
             <T v="heading">{fmt === 'report' ? 'Evidence report (PDF)' : 'Evidence package (ZIP)'}</T>

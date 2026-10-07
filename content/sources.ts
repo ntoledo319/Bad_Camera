@@ -4,6 +4,7 @@
  * Link status is checked by `npm run content:check` and recorded in docs/LINK_CHECK.md.
  */
 import type { Source } from '../src/domain/schemas';
+import { ALPR_LAWS } from './legal/alprLaws';
 
 type Reg = { id: string; kind: Source['kind']; title: string; publisher: string; url: string; scope: Source['scope']; publishedAt?: string | null; section?: string | null };
 
@@ -48,7 +49,7 @@ const reg: Reg[] = [
   { id: 'D5', kind: 'officialRecord', title: 'OSMF Nominatim Usage Policy', publisher: 'OpenStreetMap Foundation', url: 'https://operations.osmfoundation.org/policies/nominatim/', scope: 'methodology' },
   { id: 'D6', kind: 'other', title: 'Atlas of Surveillance — About', publisher: 'Electronic Frontier Foundation', url: 'https://www.atlasofsurveillance.org/about', scope: 'agency' },
   { id: 'D7', kind: 'other', title: 'OSM Wiki: Overpass API', publisher: 'OpenStreetMap Wiki', url: 'https://wiki.openstreetmap.org/wiki/Overpass_API', scope: 'methodology' },
-  { id: 'L1', kind: 'other', title: "ACLU: Photographers' Rights", publisher: 'ACLU', url: 'https://www.aclu.org/issues/free-speech/photographers-rights', scope: 'legal' },
+  { id: 'L1', kind: 'other', title: "ACLU: Photographers' Rights", publisher: 'ACLU', url: 'https://www.aclu.org/know-your-rights/photographers-what-do-if-you-are-stopped-or-detained-taking-photographs', scope: 'legal' },
   { id: 'L2', kind: 'officialRecord', title: 'Fields v. City of Philadelphia, 862 F.3d 353 (3d Cir. July 7, 2017)', publisher: 'U.S. Department of Justice (hosting)', url: 'https://www.justice.gov/crt/case-document/geraci-and-fields-v-philadelphia-court-appeals-decision', scope: 'legal', publishedAt: '2017-07-07T00:00:00.000Z' },
   { id: 'L3', kind: 'other', title: 'ACLU: Is it legal to photograph or videotape police? (older general guidance)', publisher: 'ACLU', url: 'https://www.aclu.org/news/free-speech/it-legal-photograph-or-videotape-police', scope: 'legal' },
   { id: 'L4a', kind: 'officialRecord', title: 'Conn. Gen. Stat. Chapter 14 — Freedom of Information Act', publisher: 'Connecticut General Assembly', url: 'https://www.cga.ct.gov/Current/pub/chap_014.htm', scope: 'legal' },
@@ -56,6 +57,23 @@ const reg: Reg[] = [
   { id: 'L5a', kind: 'officialRecord', title: 'Connecticut Public Act 26-14 (Substitute S.B. 397), approved May 4, 2026', publisher: 'Connecticut General Assembly', url: 'https://www.cga.ct.gov/2026/act/pa/pdf/2026PA-00014-R00SB-00397-PA.pdf', scope: 'legal', publishedAt: '2026-05-04T00:00:00.000Z', section: 'Sec. 10 (52-571j); Sec. 13 (ALPR)' },
   { id: 'L5b', kind: 'officialRecord', title: 'S.B. 397 bill status (2026)', publisher: 'Connecticut General Assembly', url: 'https://www.cga.ct.gov/asp/CGABillStatus/cgabillstatus.asp?bill_num=SB397&selBillType=Bill', scope: 'legal' },
   { id: 'L6', kind: 'officialRecord', title: 'CT Office of Early Childhood notice (Sept. 9, 2026)', publisher: 'Connecticut Office of Early Childhood', url: 'https://www.ctoec.org/news/recent-ice-presence-in-ct-know-your-rights-regardless-of-immigration-status/', scope: 'legal', publishedAt: '2026-09-09T00:00:00.000Z' },
+  { id: 'L7', kind: 'officialRecord', title: 'Massimino v. Benoit, No. 25-1104 (2d Cir. Aug. 17, 2026)', publisher: 'U.S. Court of Appeals for the Second Circuit', url: 'https://ww3.ca2.uscourts.gov/decisions/OPN/25-1104_complete_opn.pdf', scope: 'legal', publishedAt: '2026-08-17T00:00:00.000Z' },
+  { id: 'L8', kind: 'officialRecord', title: 'United States v. Connecticut, No. 3:26-cv-758 (D. Conn.) — complaint filed May 15, 2026', publisher: 'U.S. Department of Justice', url: 'https://www.justice.gov/opa/media/1441011/dl', scope: 'legal', publishedAt: '2026-05-15T00:00:00.000Z' },
+  { id: 'L9', kind: 'officialRecord', title: 'Office of Legislative Research summary of Public Act 26-14', publisher: 'Connecticut General Assembly', url: 'https://www.cga.ct.gov/2026/SUM/PDF/2026SUM00014-R02SB-00397-SUM.pdf', scope: 'legal' },
+  { id: 'L10', kind: 'officialRecord', title: 'Conn. Gen. Stat. § 52-571j (before the 2026 amendment) — Chapter 925', publisher: 'Connecticut General Assembly', url: 'https://www.cga.ct.gov/current/pub/chap_925.htm#sec_52-571j', scope: 'legal' },
+  { id: 'L11', kind: 'officialRecord', title: 'Glik v. Cunniffe, 655 F.3d 78 (1st Cir. 2011)', publisher: 'U.S. Court of Appeals for the First Circuit', url: 'https://media.ca1.uscourts.gov/pdf.opinions/10-1764P-01A.pdf', scope: 'legal' },
+  { id: 'L12', kind: 'officialRecord', title: 'Turner v. Lieutenant Driver, 848 F.3d 678 (5th Cir. 2017)', publisher: 'U.S. Court of Appeals for the Fifth Circuit', url: 'https://www.ca5.uscourts.gov/opinions/pub/16/16-10312-CV0.pdf', scope: 'legal' },
+  { id: 'L13', kind: 'officialRecord', title: 'Sharpe v. Winterville Police Department, 59 F.4th 674 (4th Cir. 2023)', publisher: 'U.S. Court of Appeals for the Fourth Circuit', url: 'https://www.ca4.uscourts.gov/opinions/211827.P.pdf', scope: 'legal' },
+  { id: 'L14', kind: 'officialRecord', title: 'ACLU of Illinois v. Alvarez, 679 F.3d 583 (7th Cir. 2012)', publisher: 'U.S. Court of Appeals for the Seventh Circuit (via govinfo)', url: 'https://www.govinfo.gov/content/pkg/USCOURTS-ca7-11-01286/pdf/USCOURTS-ca7-11-01286-0.pdf', scope: 'legal' },
+  { id: 'L15', kind: 'officialRecord', title: 'Askins v. U.S. Department of Homeland Security, 899 F.3d 1035 (9th Cir. 2018)', publisher: 'U.S. Court of Appeals for the Ninth Circuit', url: 'https://cdn.ca9.uscourts.gov/datastore/opinions/2018/08/14/16-55719.pdf', scope: 'legal' },
+  { id: 'L16', kind: 'officialRecord', title: 'Irizarry v. Yehia, 38 F.4th 1282 (10th Cir. 2022)', publisher: 'U.S. Court of Appeals for the Tenth Circuit', url: 'https://www.ca10.uscourts.gov/sites/ca10/files/opinions/010110708555.pdf', scope: 'legal' },
+  { id: 'L17', kind: 'officialRecord', title: 'Smith v. City of Cumming, 212 F.3d 1332 (11th Cir. 2000)', publisher: 'U.S. Court of Appeals for the Eleventh Circuit (via law.resource.org)', url: 'https://law.resource.org/pub/us/case/reporter/F3/212/212.F3d.1332.99-8199.html', scope: 'legal' },
+  { id: 'L18', kind: 'officialRecord', title: 'Gericke v. Begin, 753 F.3d 1 (1st Cir. 2014)', publisher: 'U.S. Court of Appeals for the First Circuit', url: 'https://www.ca1.uscourts.gov/sites/ca1/files/opnfiles/12-2326P-01A.pdf', scope: 'legal' },
+  { id: 'L19', kind: 'officialRecord', title: 'Nicodemus v. City of South Bend, 137 F.4th 654 (7th Cir. 2025)', publisher: 'U.S. Court of Appeals for the Seventh Circuit (via govinfo)', url: 'https://www.govinfo.gov/content/pkg/USCOURTS-ca7-24-01099/pdf/USCOURTS-ca7-24-01099-0.pdf', scope: 'legal' },
+  { id: 'L20', kind: 'officialRecord', title: 'Supreme Court order list, March 23, 2026 (certiorari denied in Villarreal v. Alaniz)', publisher: 'Supreme Court of the United States', url: 'https://www.supremecourt.gov/orders/courtorders/032326zor_7mio.pdf', scope: 'legal' },
+  { id: 'L21', kind: 'other', title: "Reporters Committee for Freedom of the Press: Reporter's Recording Guide", publisher: 'RCFP', url: 'https://www.rcfp.org/reporters-recording-guide/', scope: 'legal' },
+  { id: 'L22', kind: 'officialRecord', title: 'Carpenter v. United States, 585 U.S. 296 (2018)', publisher: 'Supreme Court of the United States', url: 'https://www.supremecourt.gov/opinions/17pdf/16-402_h315.pdf', scope: 'legal' },
+  { id: 'L23', kind: 'other', title: 'ACLU Know Your Rights: Photographers (state affiliate copy of the national guide)', publisher: 'ACLU of Idaho', url: 'https://www.acluidaho.org/app/uploads/2016/10/kyr-photographers_2016.pdf', scope: 'legal' },
   { id: 'T1', kind: 'other', title: 'Expo EAS Build introduction', publisher: 'Expo', url: 'https://docs.expo.dev/build/introduction/', scope: 'methodology' },
   { id: 'T2', kind: 'other', title: 'MapLibre React Native — Expo setup', publisher: 'MapLibre', url: 'https://maplibre.org/maplibre-react-native/docs/setup/expo/', scope: 'methodology' },
   { id: 'T3', kind: 'other', title: 'Expo SQLite reference', publisher: 'Expo', url: 'https://docs.expo.dev/versions/latest/sdk/sqlite/', scope: 'methodology' },
@@ -63,6 +81,9 @@ const reg: Reg[] = [
   { id: 'T5', kind: 'other', title: 'Apple UIActivityViewController', publisher: 'Apple', url: 'https://developer.apple.com/documentation/uikit/uiactivityviewcontroller', scope: 'methodology' },
   { id: 'T6', kind: 'other', title: 'Android: Send simple data to other apps', publisher: 'Android Developers', url: 'https://developer.android.com/training/sharing/send', scope: 'methodology' },
 ];
+
+// State plate-reader statutes (content/legal/alprLaws.ts), one source each.
+for (const l of ALPR_LAWS) reg.push({ id: `ALPR-${l.code}`, kind: /\.gov\/|legislature|leg\.|legis|\.state\.|nh\.gov/.test(l.url) ? 'officialRecord' : 'other', title: `${l.state}: ${l.statute}`, publisher: l.state, url: l.url, scope: 'legal' });
 
 export const SOURCE_REGISTER: Source[] = reg.map((r) => ({
   id: r.id,

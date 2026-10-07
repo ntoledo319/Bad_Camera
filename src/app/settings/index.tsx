@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronRight, Shield, Database, Archive, FileText, Activity, FlaskConical } from 'lucide-react-native';
+import { ChevronRight, Shield, Database, Archive, FileText, Activity, FlaskConical, Scale } from 'lucide-react-native';
 import { useStore } from '../../data/store';
 import { useTheme } from '../../design/theme';
 import { Banner, Card, Row, Screen, Section, Segmented, T, Toggle } from '../../design/ui';
@@ -64,6 +64,7 @@ export default function SettingsHome() {
         </Card>
       </Section>
       <Section title="About">
+        <Row left={<Scale size={22} color={c.primary} />} title="Privacy policy & terms" subtitle="What Sightline collects (nothing) and the rules of use" onPress={() => router.push('/settings/legal')} right={chev} />
         <Row left={<FileText size={22} color={c.primary} />} title="Licenses & attribution" onPress={() => router.push('/settings/licenses')} right={chev} />
         <Row left={<Activity size={22} color={c.primary} />} title="Diagnostics" subtitle="Local-only log you can choose to export" onPress={() => router.push('/settings/diagnostics')} right={chev} />
         <Row title="Verify an evidence package" onPress={() => router.push('/verify')} right={chev} />

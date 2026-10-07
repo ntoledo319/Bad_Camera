@@ -36,7 +36,7 @@ export default function Learn() {
             <Scale size={28} color={c.primary} />
             <View style={{ flex: 1 }}>
               <T v="heading">Your rights when documenting</T>
-              <T v="small" style={{ color: c.text2 }}>U.S. overview + Connecticut 2026 changes, with citations.</T>
+              <T v="small" style={{ color: c.text2 }}>U.S. rights, Connecticut 2026 changes and state plate-reader laws, with citations.</T>
             </View>
             <ChevronRight size={20} color={c.text2} />
           </View>

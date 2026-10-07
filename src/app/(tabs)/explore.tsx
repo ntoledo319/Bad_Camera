@@ -1,7 +1,7 @@
 /** S02 Explore map + S03 list + S05 collapsed detail sheet. */
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, Platform, Pressable, ScrollView, View, useWindowDimensions } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Search, List, Map as MapIcon, LocateFixed, SlidersHorizontal, X, Bookmark, BookmarkCheck, NotebookPen, Share2, Info, RefreshCw, CloudDownload } from 'lucide-react-native';
 import { useStore } from '../../data/store';
@@ -16,7 +16,7 @@ import { SettingsGear } from '../../features/SettingsGear';
 import { CategoryIcon } from '../../features/CategoryIcon';
 import { applyFilters, activeFilterCount, CHIP_FILTERS, inBbox, sortByDistance } from '../../domain/filters';
 import { areaName, distanceFor, distanceRowText, installationTitle, observedLabel, placeLabelOf, sourceBadge, fmtDate } from '../../features/format';
-import { OVERPASS_ENDPOINT } from '../../data/publicData';
+import { DATA_HOST, OVERPASS_ENDPOINT } from '../../data/publicData';
 import { requestFix } from '../../platform/location';
 import { shareBytes, copyText } from '../../platform/files';
 import type { CameraInstallation } from '../../domain/schemas';
@@ -40,7 +40,9 @@ export default function Explore() {
   const [searchBox, setSearchBox] = useState<[number, number, number, number] | null>(null);
   const [moved, setMoved] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const params = useLocalSearchParams<{ search?: string }>();
+  // Welcome's "Explore a place" lands here with the place search already open.
+  const [searchOpen, setSearchOpen] = useState(params.search === '1');
   const [coverageOpen, setCoverageOpen] = useState(false);
   const [locMsg, setLocMsg] = useState<string | null>(null);
   const [locBusy, setLocBusy] = useState(false);
@@ -48,7 +50,7 @@ export default function Explore() {
   const [bookmarked, setBookmarked] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
   const [dlBusy, setDlBusy] = useState(false);
-  const [dlError, setDlError] = useState<string | null>(null);
+  const [dlError, setDlError] = useState<{ text: string; canFallback: boolean } | null>(null);
   const lastCenter = useRef(center);
 
   // Toasts are transient confirmations; they clear themselves after a few seconds.
@@ -85,16 +87,26 @@ export default function Explore() {
   const viewTooLarge = !!viewport && (viewport[2] - viewport[0] > 1 || viewport[3] - viewport[1] > 1);
   const showDownload = !s.settings.demoMode && !covered && !!viewport;
 
-  const downloadArea = async () => {
+  // Published tiles first (fast, cached, no load on volunteer servers); direct Overpass only if the user asks after a failure.
+  const downloadArea = async (direct = false) => {
     if (!viewport || !viewCenter) return;
     setDlBusy(true);
     setDlError(null);
     const name = areaName(viewCenter.lat, viewCenter.lon);
-    const r = await s.publicData.downloadArea(viewport, name);
-    setDlBusy(false);
-    if (!r.ok) return setDlError(r.error);
+    let n: number;
+    if (direct) {
+      const r = await s.publicData.downloadArea(viewport, name);
+      setDlBusy(false);
+      if (!r.ok) return setDlError({ text: r.error, canFallback: false });
+      n = r.region.installations.length;
+    } else {
+      const r = await s.publicData.downloadFromHost(viewport, name);
+      setDlBusy(false);
+      if (!r.ok) return setDlError({ text: `${r.error}.`, canFallback: true });
+      n = r.records;
+      if (!n && r.skipped) return setToast('This area is already up to date on your device.');
+    }
     s.bumpData();
-    const n = r.region.installations.length;
     setToast(n ? `Downloaded ${n} mapped record${n === 1 ? '' : 's'} · ${name}` : `No mapped records found · ${name}. That does not mean no cameras are present.`);
   };
 
@@ -403,16 +415,20 @@ export default function Explore() {
             <T v="body" style={{ fontWeight: '600' }}>
               No camera data downloaded for this area
             </T>
-            {dlError && <Banner kind="error">{dlError}</Banner>}
+            {dlError && (
+              <Banner kind="error" action={dlError.canFallback && !s.settings.offlineOnly ? <Button kind="ghost" label="Try OpenStreetMap directly" onPress={() => downloadArea(true)} /> : undefined}>
+                {dlError.canFallback ? `${dlError.text} You can try the OpenStreetMap query service directly instead (slower; sends this map area to ${new URL(OVERPASS_ENDPOINT).hostname}).` : dlError.text}
+              </Banner>
+            )}
             {s.settings.offlineOnly ? (
               <T v="small" color={c.text2}>Offline-only mode is on. Turn it off in Settings to download data.</T>
             ) : viewTooLarge ? (
               <T v="small" color={c.text2}>Zoom in to a town or neighbourhood to download its mapped records.</T>
             ) : (
               <>
-                <Button label={dlBusy ? 'Downloading…' : 'Download camera data for this area'} busy={dlBusy} disabled={dlBusy} icon={<CloudDownload size={18} color={c.onPrimary} />} onPress={downloadArea} />
+                <Button label={dlBusy ? 'Downloading…' : 'Download camera data for this area'} busy={dlBusy} disabled={dlBusy} icon={<CloudDownload size={18} color={c.onPrimary} />} onPress={() => downloadArea(false)} />
                 <T v="caption" color={c.text2}>
-                  {`Sends this map area (not your location) to ${new URL(OVERPASS_ENDPOINT).hostname}, the OpenStreetMap query service. Records are saved on this device.`}
+                  {`Downloads OpenStreetMap records for this area from ${new URL(DATA_HOST).hostname}, which sees your IP address and the map tiles requested — not your location. Records are saved on this device.`}
                 </T>
               </>
             )}

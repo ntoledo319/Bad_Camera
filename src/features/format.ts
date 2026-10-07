@@ -11,7 +11,9 @@ export function fmtDate(iso: string | null | undefined, withTime = false): strin
   if (!iso) return 'Not established';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return 'Not established';
-  const date = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+  // Date-only values (stored as midnight UTC) must not shift to the previous day in U.S. time zones.
+  const dateOnly = /T00:00:00(\.000)?Z$/.test(iso) || /^\d{4}-\d{2}-\d{2}$/.test(iso);
+  const date = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', ...(dateOnly ? { timeZone: 'UTC' } : {}) });
   if (!withTime) return date;
   return `${date}, ${d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}`;
 }

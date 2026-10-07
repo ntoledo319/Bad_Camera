@@ -1,19 +1,30 @@
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
 import { ThemeProvider, useTheme } from '../design/theme';
 import { AppStoreProvider, useStore } from '../data/store';
-import { Banner, Button, Loading, Screen, T } from '../design/ui';
+import { Banner, Button, IconButton, Loading, Screen, T } from '../design/ui';
 import { AppMark } from '../design/AppMark';
 import { sweepExports } from '../platform/files';
 import { unlock } from '../platform/auth';
 import { log } from '../platform/diagnostics';
-import { Lock } from 'lucide-react-native';
+import { House, Lock } from 'lucide-react-native';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+
+/** Shown instead of a back arrow when a screen was opened directly (link, reload) and has no history. */
+function HomeButton() {
+  const { c } = useTheme();
+  const router = useRouter();
+  return (
+    <IconButton label="Go to Explore" onPress={() => router.replace('/explore')} style={{ marginLeft: 4, marginRight: 8 }}>
+      <House size={20} color={c.primary} />
+    </IconButton>
+  );
+}
 
 function LockGate({ children }: { children: React.ReactNode }) {
   const s = useStore();
@@ -71,6 +82,7 @@ function Shell() {
       <LockGate>
         <Stack
           screenOptions={{
+            headerLeft: ({ canGoBack }) => (canGoBack ? undefined : <HomeButton />),
             headerStyle: { backgroundColor: c.canvas },
             headerTintColor: c.primary,
             headerTitleStyle: { color: c.text, fontWeight: '600' },
@@ -100,6 +112,7 @@ function Shell() {
           <Stack.Screen name="settings/backup" options={{ title: 'Backup & restore' }} />
           <Stack.Screen name="settings/licenses" options={{ title: 'Licenses' }} />
           <Stack.Screen name="settings/diagnostics" options={{ title: 'Diagnostics' }} />
+          <Stack.Screen name="settings/legal" options={{ title: 'Privacy policy & terms' }} />
           <Stack.Screen name="verify" options={{ title: 'Verify evidence package' }} />
         </Stack>
       </LockGate>
