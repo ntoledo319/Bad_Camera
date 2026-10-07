@@ -4,17 +4,21 @@ What could not be finished here, and exactly what unblocks it.
 
 ## Needs the owner
 
-1. **Android build.** Install Android Studio (SDK 36 + NDK) or run `eas build -p android`
+1. **Publish the data site (≈5 min, you chose to do this later).** Run `npm run data:deploy`
+   — it logs in to Cloudflare in your browser, uploads the site, and stores a Pages-only token as a
+   GitHub secret so it rebuilds daily. Steps: `docs/DEPLOY.md`. Until then the app's "Download
+   camera data" falls back to asking OpenStreetMap directly (user-confirmed).
+2. **Android build.** Install Android Studio (SDK 36 + NDK) or run `eas build -p android`
    (free Expo account). Then: `npm ci && npm run prebuild && npm run android`.
-2. **iOS build.** Needs a Mac with Xcode 26+ and an Apple Developer account for device installs
+3. **iOS build.** Needs a Mac with Xcode 26+ and an Apple Developer account for device installs
    (`npm run ios`, or `eas build -p ios`). Simulator builds need no paid account.
-3. **Device checks.** VoiceOver/TalkBack, 200% system text, native share sheet + cancel, camera
+4. **Device checks.** VoiceOver/TalkBack, 200% system text, native share sheet + cancel, camera
    capture, Keychain/Keystore, app lock, offline cold start, performance (A18, A21, A24, A25, A29).
-4. **Legal review.** Rights pages are marked "Not attorney-reviewed". Have a lawyer review before
-   calling them reviewed guidance; re-check CT Public Act 26-14 for amendments or court orders.
-5. **Name/trademark.** "Sightline" is a working name; clearance not done.
-6. **Production data host.** Public Overpass is fine for user-triggered development use. For a
-   public release, host regional extracts on your own static server/CDN (decision D6).
+5. **Legal (you chose not to hire a lawyer):** every legal statement is now source-checked
+   claim by claim (`docs/LEGAL_REVIEW.md`). Re-check two moving targets: the ruling in
+   *United States v. Connecticut* (No. 3:26-cv-758) and the *Schmidt v. Norfolk* appeal. The app
+   says "Source-checked · not lawyer-reviewed"; never change that to "reviewed".
+6. **Name/trademark.** "Sightline" is a working name; clearance not done.
 
 ## Unfinished enhancements (spec §22, optional)
 
@@ -22,8 +26,9 @@ What could not be finished here, and exactly what unblocks it.
 - Inbound share extension (receive photos/URLs from other apps) — in-app picker works instead.
 - User-provided GeoJSON import — the "download this area" path covers the same need online.
 - SQLCipher for the notebook database — photos are encrypted; the SQLite file is not (D8).
-- Store privacy answers (App Privacy / Play Data Safety) — draft from D8, D14 and the privacy
-  screen once native builds exist.
+- Store privacy questionnaires (App Privacy / Play Data Safety) — the privacy policy now exists
+  (`/privacy.html` on the data site); fill the questionnaires from it, D8 and D14 once native
+  builds exist.
 
 ## Known limits (by design)
 

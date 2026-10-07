@@ -26,11 +26,11 @@ to ALPR. Relation centroids are flagged approximate. EFF Atlas is linked as agen
 never turned into pins.
 
 **D6 — Downloading other areas.** The app ships one real extract (Fairfield, CT). For anywhere
-else, Explore offers "Download camera data for this area": one user-triggered Overpass query for
-the visible area, clamped to 0.25° per side, stored as its own region. Client rules: one request
-in flight, 30 s timeout, ≤3 retries with exponential backoff + jitter, `Retry-After` honoured,
-20 MB ceiling. This fits the spec's development allowance; **production should serve
-pre-built regional extracts from an owner-run static host** instead of public Overpass.
+else, Explore offers "Download camera data for this area". It first fetches pre-built tiles from
+the Sightline data site (D16), each checked against its published SHA-256. Only if that fails,
+and only when the user taps "Try OpenStreetMap directly", does it send one bounded Overpass query
+(≤0.25° per side). Both clients: one request in flight, 30 s timeout, bounded retries with
+backoff + jitter, `Retry-After` honoured, size ceiling.
 
 **D7 — Search.** Bundled place index (Fairfield neighbourhoods, CT towns, 70+ U.S. cities) and
 coordinate entry. No remote geocoding, no Nominatim autocomplete.
@@ -69,3 +69,27 @@ are explicitly blocked in `app.json`; Expo's default motion-usage string is remo
 **D15 — Legal content.** U.S. overview from the spec draft with citations; Connecticut 2026
 supplement summarises Public Act 26-14 as read from the official PDF. Both marked
 "Not attorney-reviewed".
+
+**D16 — Data site.** A static site on Cloudflare Pages (free) serves `v1/manifest.json` plus
+1°×1° tiles (split while >4,000 elements) of slim OSM elements: id, coordinates, version, edit
+time and tags — mapper usernames, uids and changesets are dropped. The app normalizes tiles with
+the same code as direct Overpass downloads. `tools/data-site/build.ts` queries a 2° grid (bbox
+queries; state-boundary area queries timed out on every public server), falls back across three
+public Overpass instances, stops after 6 consecutive failures, and keeps the last published copy
+for any failed cell. GitHub Actions rebuilds daily; deploy runs only when the Cloudflare secrets
+exist. ODbL attribution and share-alike notice ship with the data. Indoor cameras
+(`surveillance=indoor`) are skipped everywhere as not public-facing.
+
+**D17 — Legal research instead of a lawyer.** The owner cannot hire a lawyer, so every legal
+statement is checked against a primary or official source and recorded claim by claim in
+`content/legal/review.ts` → `docs/LEGAL_REVIEW.md`; `npm run check` fails if a statement has no
+ledger row. The app says "Source-checked · not lawyer-reviewed" and never claims attorney review.
+Two 2026 developments found and added: Massimino v. Benoit (2d Cir.) and United States v.
+Connecticut (D. Conn.). Public-records citations for all 50 states + DC power the request
+builder; unverified entries are labelled in the app.
+
+**D18 — Privacy policy and terms.** One source (`content/legal/policies.ts`) renders both the
+in-app screen and the website pages, so store-listing URLs and the app never disagree.
+
+**D19 — Dates.** Date-only values (stored as midnight UTC) are formatted in UTC; before this fix
+U.S. users saw OSM check dates and the legal "checked" date one day early.

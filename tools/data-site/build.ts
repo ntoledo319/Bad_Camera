@@ -5,6 +5,7 @@
  *   npx tsx tools/data-site/build.ts                       # whole U.S. grid, live Overpass
  *   npx tsx tools/data-site/build.ts --cells c40_-74,c40_-72   # a subset (cell codes)
  *   npx tsx tools/data-site/build.ts --previous https://sightline-data.pages.dev
+ *   npx tsx tools/data-site/build.ts --pages-only true      # re-render HTML/static files, keep data
  *
  * - One bounding-box Overpass query per 2° grid cell (sequential, polite pauses, retries,
  *   mirror fallback). Cells with no data cost Overpass almost nothing.
@@ -62,6 +63,7 @@ function slim(e: OsmElement, r: string): El | null {
 }
 
 const pt = (e: El) => (e.type === 'node' ? { lat: e.lat!, lon: e.lon! } : e.center!);
+const cellOf = (p: { lat: number; lon: number }) => FETCH_CELLS.find((c) => p.lon >= c.bbox[0] && p.lon < c.bbox[2] && p.lat >= c.bbox[1] && p.lat < c.bbox[3])?.code ?? null;
 
 async function fetchCell(code: string, bbox: [number, number, number, number]): Promise<{ elements: El[]; upstream: string | null }> {
   const cached = CACHE ? join(CACHE, `${code}.json`) : null;
@@ -105,9 +107,12 @@ async function previousElements(): Promise<{ byRegion: Map<string, El[]>; manife
     for (const t of m.tiles) {
       const tile = TileFile.parse(await (await fetch(`${PREVIOUS}/v1/${t.path}`)).json());
       for (const e of tile.elements as El[]) {
-        if (!e.r) continue;
-        if (!byRegion.has(e.r)) byRegion.set(e.r, []);
-        byRegion.get(e.r)!.push(e);
+        // Elements from older builds (or other fetch layouts) are re-assigned to their grid cell by location.
+        const code = e.r && FETCH_CELLS.some((c) => c.code === e.r) ? e.r : cellOf(pt(e));
+        if (!code) continue;
+        e.r = code;
+        if (!byRegion.has(code)) byRegion.set(code, []);
+        byRegion.get(code)!.push(e);
       }
     }
     console.log(`previous site: ${m.totalRecords} records in ${m.tiles.length} tiles`);
@@ -132,7 +137,19 @@ function split(b: Bbox, els: El[]): { bbox: Bbox; els: El[] }[] {
 }
 const inCell = (p: { lat: number; lon: number }, q: Bbox) => p.lon >= q[0] && p.lon < q[2] && p.lat >= q[1] && p.lat < q[3];
 
+function writePages(manifest: SiteManifest) {
+  const staticDir = join(ROOT, 'data-site', 'static');
+  for (const f of readdirSync(staticDir)) copyFileSync(join(staticDir, f), join(OUT, f));
+  for (const [name, html] of Object.entries(renderPages(manifest))) writeFileSync(join(OUT, name), html);
+}
+
 async function main() {
+  if (args.has('pages-only')) {
+    const manifest = SiteManifest.parse(JSON.parse(readFileSync(join(OUT, 'v1', 'manifest.json'), 'utf8')));
+    writePages(manifest);
+    console.log(`pages re-rendered for ${manifest.totalRecords} records -> ${OUT}`);
+    return;
+  }
   const generatedAt = new Date().toISOString();
   const prev = await previousElements();
   const all = new Map<string, El>();
@@ -212,9 +229,7 @@ async function main() {
   });
   writeFileSync(join(OUT, 'v1', 'manifest.json'), JSON.stringify(manifest, null, 1));
 
-  const staticDir = join(ROOT, 'data-site', 'static');
-  for (const f of readdirSync(staticDir)) copyFileSync(join(staticDir, f), join(OUT, f));
-  for (const [name, html] of Object.entries(renderPages(manifest))) writeFileSync(join(OUT, name), html);
+  writePages(manifest);
 
   const failed = regionReport.filter((r) => r.status !== 'fresh');
   console.log(`site built: ${all.size} records, ${entries.length} tiles, ${failed.length} cell(s) not fresh${failed.length ? ` (${failed.map((r) => r.code).join(', ')})` : ''} -> ${OUT}`);

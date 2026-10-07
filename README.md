@@ -11,7 +11,8 @@ Working name only — trademark not cleared. Full product spec: [`docs/BUILD_SPE
 ## What it does
 
 - **Explore** — map + accessible list of OpenStreetMap camera/ALPR/sensor records. Ships with
-  Fairfield, CT; download any other U.S. area on demand (one bounded query, saved on device).
+  Fairfield, CT; download any other U.S. area on demand from the Sightline data site (daily-updated
+  tiles on Cloudflare Pages), saved on device.
   Honest straight-line distances with accuracy and freshness labels.
 - **Identify** — photo capture/import, guided feature questions, rule-based candidates with
   "why this may match" — never invented probabilities.
@@ -19,8 +20,9 @@ Working name only — trademark not cleared. Full product spec: [`docs/BUILD_SPE
   bookmarks, collections, user-added source links.
 - **Share** — redaction editor (masks burned into pixels, metadata stripped), social cards
   (portrait/square/story/wide), evidence PDF, verifiable evidence ZIP, batch export.
-- **Learn** — equipment guide (19 families), U.S. rights overview + Connecticut 2026 supplement,
-  public-records request builder, methodology.
+- **Learn** — equipment guide (19 families); U.S. rights, Connecticut 2026 and 26 state plate-reader
+  laws, each statement source-checked (`docs/LEGAL_REVIEW.md`); public-records request builder for
+  all 50 states + DC; methodology.
 - **Backup** — encrypted (scrypt + XChaCha20-Poly1305) notebook backup and conflict-safe restore.
 
 No account, no analytics, no backend. Network only for map tiles and explicit data downloads.
@@ -43,6 +45,14 @@ npm run android        # needs Android SDK + JDK 17
 npm run ios            # needs macOS + Xcode
 ```
 
+Data site (camera tiles + privacy/terms pages, Cloudflare Pages free plan):
+
+```bash
+npm run data:build     # build data-site/dist from OpenStreetMap (slow; polite to Overpass)
+npm run data:verify    # check hashes, schema, attribution, policy pages
+npm run data:deploy    # one-time setup + deploy; then GitHub Actions rebuilds daily (docs/DEPLOY.md)
+```
+
 Other tools:
 
 ```bash
@@ -59,7 +69,7 @@ src/app/          routes (Expo Router)          src/domain/    pure logic: schem
 src/features/     screen components                            projection, evidence, backup
 src/data/         notebook, public data, KV      src/platform/  camera, files, location, auth
 content/          catalog, legal, places, regions                (native + .web variants)
-tools/            ingest, verify-evidence, content-check, samples, icons
+tools/            data-site, ingest, verify-evidence, content-check, qa, samples, icons
 tests/unit/       Vitest suites                  docs/          spec, status, decisions, blockers
 ```
 
@@ -67,7 +77,8 @@ tests/unit/       Vitest suites                  docs/          spec, status, de
 
 See [`docs/STATUS.md`](docs/STATUS.md) for the acceptance log (PASS / FAIL / NOT RUN) and
 [`docs/BLOCKERS.md`](docs/BLOCKERS.md) for what still needs the owner. Not production-ready:
-native builds, device testing and legal review are outstanding.
+native builds and device testing are outstanding, and the data site is ready but not yet deployed.
+Legal pages are source-checked claim by claim, not lawyer-reviewed.
 
 ## License notes
 
